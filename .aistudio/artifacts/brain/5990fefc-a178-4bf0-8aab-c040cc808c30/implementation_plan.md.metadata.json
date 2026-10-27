@@ -1,6 +1,0 @@
-{
-  "summary":  "Complete architectural blueprint and implementation plan for the Climate-Adjusted Credit Curve & CDS Pricing Desk, incorporating institutional quant terminal layout, pre-calibrated global issuers, Merton structural model, NGFS transition scenarios, validation suite, and exportable Python package.",
-  "updatedAt":  "2026-10-27T08:46:18.259795399Z",
-  "requestFeedback":  true,
-  "userFacing":  true
-}
