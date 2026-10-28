@@ -1,7 +1,6 @@
 # Climate Adjust Credit Curve and Merton Desk (v1.0)
 
 **Author**: Harshal Jain  
-**Focus**: GrEnFIn (Climate & Business) Quantitative Credit Risk Portfolio  
 **Status**: Production-Grade · Fully Tested (15/15 Green Acceptance Tests) · QuantLib Validated  
 
 ---
