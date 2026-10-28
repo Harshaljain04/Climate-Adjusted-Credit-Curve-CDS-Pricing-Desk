@@ -42,14 +42,14 @@ export const Header: React.FC<HeaderProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-base font-bold tracking-tight text-white font-sans whitespace-nowrap">
-                GrEnFIn Quant Desk
+                Climate Adjust Credit Curve and Merton Desk
               </span>
               <span className="text-xs px-2 py-0.5 rounded bg-cyan-950/60 border border-cyan-800/40 text-cyan-300 font-mono">
                 v1.0 CDS
               </span>
             </div>
             <p className="text-[11px] text-slate-400 whitespace-nowrap">
-              Climate-Adjusted Credit Curve &amp; Merton Desk
+              Quantitative Credit Risk &amp; NGFS Transition Analysis
             </p>
           </div>
         </div>

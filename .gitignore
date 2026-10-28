@@ -6,3 +6,14 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Do not commit project brief or implementation PDFs
+*.pdf
+public/assets/
+*.zip
+
+# Python temporary caches
+.pytest_cache/
+__pycache__/
+*.pyc
+.venv/

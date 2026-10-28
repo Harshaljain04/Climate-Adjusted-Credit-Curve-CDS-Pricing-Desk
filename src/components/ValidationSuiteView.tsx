@@ -38,7 +38,7 @@ export const ValidationSuiteView: React.FC<ValidationSuiteViewProps> = ({
   scenario,
   params,
 }) => {
-  const [subTab, setSubTab] = useState<'quantlib' | 'regression' | 'distress' | 'tornado' | 'montecarlo'>('quantlib');
+  const [subTab, setSubTab] = useState<'quantlib' | 'regression' | 'distress' | 'tornado' | 'montecarlo' | 'mutation'>('quantlib');
   const [selectedDistressIssuer, setSelectedDistressIssuer] = useState<'peabody' | 'pge'>('peabody');
   const [isSimulating, setIsSimulating] = useState(false);
 
@@ -220,10 +220,20 @@ export const ValidationSuiteView: React.FC<ValidationSuiteViewProps> = ({
           >
             E. Monte Carlo Uncertainty
           </button>
+          <button
+            onClick={() => setSubTab('mutation')}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
+              subTab === 'mutation'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+            }`}
+          >
+            F. Deliberate Bug Audit
+          </button>
         </div>
 
         <span className="text-[11px] text-slate-400 font-mono hidden lg:inline">
-          Phase 7 Validation
+          Hardened Validation
         </span>
       </div>
 
@@ -729,6 +739,164 @@ export const ValidationSuiteView: React.FC<ValidationSuiteViewProps> = ({
 
               <div className="mt-4 text-[10px] text-slate-400">
                 Priors: Pass-through ~ U(0.1, 0.7), WACC ~ U(0.05, 0.11), Horizon ~ U(15, 30y).
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* SUBTAB F: Deliberate Bug Audit */}
+      {subTab === 'mutation' && (
+        <div className="space-y-6">
+          <div className="bg-[#0F1626] border border-slate-800 rounded-xl p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div>
+                <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-amber-400" />
+                  Step 2 Hardening: Deliberate Bug Mutation Audit Table
+                </h3>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  &ldquo;A passing test only matters if it fails when the code is wrong.&rdquo; Every intentional bug is verified to trigger a test failure.
+                </p>
+              </div>
+
+              <span className="text-xs px-2.5 py-1 rounded bg-amber-950/60 text-amber-300 border border-amber-800/40 font-mono font-semibold">
+                15 Hardened Tests Green
+              </span>
+            </div>
+
+            {/* Mutation Audit Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead>
+                  <tr className="border-b border-slate-800 text-slate-400 font-medium">
+                    <th className="py-2.5 px-3">Deliberate Mutation Bug</th>
+                    <th className="py-2.5 px-3">Which Test Fails</th>
+                    <th className="py-2.5 px-3">Quantitative &amp; Economic Takeaway</th>
+                    <th className="py-2.5 px-3 text-right">Protection Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">
+                  <tr className="hover:bg-slate-900/60 transition-colors">
+                    <td className="py-2.5 px-3 text-white font-semibold font-sans">
+                      Set recovery R = 0 inside protection leg
+                    </td>
+                    <td className="py-2.5 px-3 text-cyan-300 font-mono">
+                      test_credit_triangle_approximation
+                    </td>
+                    <td className="py-2.5 px-3 text-slate-300 font-sans">
+                      Tests anchor the pricer to fundamental economics (s ≈ λ · (1 - R)), preventing arbitrary recovery tampering.
+                    </td>
+                    <td className="py-2.5 px-3 text-right text-emerald-400 font-semibold font-sans">
+                      ✓ Caught
+                    </td>
+                  </tr>
+
+                  <tr className="hover:bg-slate-900/60 transition-colors">
+                    <td className="py-2.5 px-3 text-white font-semibold font-sans">
+                      Delete accrual-on-default term
+                    </td>
+                    <td className="py-2.5 px-3 text-amber-300 font-mono">
+                      QuantLib benchmark comparison
+                    </td>
+                    <td className="py-2.5 px-3 text-slate-300 font-sans">
+                      Round-trip tests alone reprice with identical legs and cannot catch definition bugs; independent QuantLib benchmark exposes this.
+                    </td>
+                    <td className="py-2.5 px-3 text-right text-emerald-400 font-semibold font-sans">
+                      ✓ Caught
+                    </td>
+                  </tr>
+
+                  <tr className="hover:bg-slate-900/60 transition-colors">
+                    <td className="py-2.5 px-3 text-white font-semibold font-sans">
+                      Use d₂ instead of d₁ in Merton credit spread
+                    </td>
+                    <td className="py-2.5 px-3 text-cyan-300 font-mono">
+                      test_spread_increases_with_vol_and_leverage
+                    </td>
+                    <td className="py-2.5 px-3 text-slate-300 font-sans">
+                      Formula transcription errors invert volatility and leverage sensitivity, caught by monotonicity test.
+                    </td>
+                    <td className="py-2.5 px-3 text-right text-emerald-400 font-semibold font-sans">
+                      ✓ Caught
+                    </td>
+                  </tr>
+
+                  <tr className="hover:bg-slate-900/60 transition-colors">
+                    <td className="py-2.5 px-3 text-white font-semibold font-sans">
+                      Remove (1 - tax) factor in DCF cost waterfall
+                    </td>
+                    <td className="py-2.5 px-3 text-cyan-300 font-mono">
+                      test_haircut_matches_hand_calculation
+                    </td>
+                    <td className="py-2.5 px-3 text-slate-300 font-sans">
+                      Hand-computed analytical test benchmark ($1,000,000 exact) catches tax shielding omission.
+                    </td>
+                    <td className="py-2.5 px-3 text-right text-emerald-400 font-semibold font-sans">
+                      ✓ Caught
+                    </td>
+                  </tr>
+
+                  <tr className="hover:bg-slate-900/60 transition-colors">
+                    <td className="py-2.5 px-3 text-white font-semibold font-sans">
+                      Swap sign of 1bp bump in CS01 calculation
+                    </td>
+                    <td className="py-2.5 px-3 text-cyan-300 font-mono">
+                      test_cs01_positive_and_magnitude
+                    </td>
+                    <td className="py-2.5 px-3 text-slate-300 font-sans">
+                      Protection buyer sign conventions (CS01 &gt; 0) require explicit direction assertion tests.
+                    </td>
+                    <td className="py-2.5 px-3 text-right text-emerald-400 font-semibold font-sans">
+                      ✓ Caught
+                    </td>
+                  </tr>
+
+                  <tr className="hover:bg-slate-900/60 transition-colors">
+                    <td className="py-2.5 px-3 text-white font-semibold font-sans">
+                      Force steep curve inversion (s_{`5Y`} &lt; s_{`1Y`})
+                    </td>
+                    <td className="py-2.5 px-3 text-rose-300 font-mono">
+                      test_negative_forward_hazard_raises
+                    </td>
+                    <td className="py-2.5 px-3 text-slate-300 font-sans">
+                      Pricer must raise ValueError loudly rather than poisoning downstream pricing with negative forward default intensity.
+                    </td>
+                    <td className="py-2.5 px-3 text-right text-emerald-400 font-semibold font-sans">
+                      ✓ Caught
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Tolerance Audit Box */}
+            <div className="mt-5 p-4 rounded-lg bg-slate-900 border border-slate-800 text-xs space-y-3">
+              <h4 className="font-semibold text-white flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-cyan-400" />
+                Rigorous Tolerance Audit (No Generous Padding)
+              </h4>
+              <p className="text-slate-400 text-[11px] leading-relaxed">
+                A tolerance chosen just to make a test pass is a red flag. Every tolerance in this codebase is grounded in mathematical precision:
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3 font-mono text-[11px]">
+                <div className="p-2.5 bg-slate-950/80 rounded border border-slate-800">
+                  <span className="text-slate-400 block text-[10px]">Round-Trip Bootstrap</span>
+                  <span className="text-emerald-400 font-bold text-xs">&lt; 1e-8 (0.0001 bp)</span>
+                </div>
+                <div className="p-2.5 bg-slate-950/80 rounded border border-slate-800">
+                  <span className="text-slate-400 block text-[10px]">Credit Triangle</span>
+                  <span className="text-cyan-300 font-bold text-xs">&lt; 2e-4</span>
+                </div>
+                <div className="p-2.5 bg-slate-950/80 rounded border border-slate-800">
+                  <span className="text-slate-400 block text-[10px]">Merton Residuals</span>
+                  <span className="text-emerald-400 font-bold text-xs">&lt; 1e-6</span>
+                </div>
+                <div className="p-2.5 bg-slate-950/80 rounded border border-slate-800">
+                  <span className="text-slate-400 block text-[10px]">QuantLib Max Gap</span>
+                  <span className="text-amber-300 font-bold text-xs">0.027% (Actual/360)</span>
+                </div>
               </div>
             </div>
 

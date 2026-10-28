@@ -216,7 +216,7 @@ D. Parameter Sensitivity & Monte Carlo: 10,000 draws establish confidence interv
         </div>
 
         <span className="text-[11px] text-slate-400 font-mono hidden md:inline">
-          GrEnFIn Showcase
+          Quant Portfolio Showcase
         </span>
       </div>
 
