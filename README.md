@@ -5,7 +5,7 @@
 
 ---
 
-## 1. Executive Summary & Unique Selling Proposition (USP)
+## 1. Summary of Project 
 
 ### Overview
 The **Climate Adjust Credit Curve and Merton Desk** is an institutional-grade quantitative framework and interactive trading workstation designed to evaluate how macro climate transition pathways transmit into corporate balance sheets, credit default probabilities, and Credit Default Swap (CDS) term structures.
@@ -21,7 +21,7 @@ Traditional ESG methodologies rely almost exclusively on qualitative "ESG scorec
 
 ---
 
-## 2. Where the Project Excels (Key Strengths)
+## 2. Key Strengths
 
 - **Extreme Numerical Precision**:
   - The hazard rate bootstrap solver reproduces market par spreads across all tenors ($1\text{Y}, 3\text{Y}, 5\text{Y}, 7\text{Y}, 10\text{Y}$) with round-trip error strictly below $10^{-8}$ ($0.0001\text{ bp}$).
@@ -39,7 +39,7 @@ Traditional ESG methodologies rely almost exclusively on qualitative "ESG scorec
 
 ---
 
-## 3. Where It Lacks & Critical Limitations (Honest Academic Disclosure)
+## 3. Critical Limitations
 
 To maintain rigorous quant standards, the following structural limitations and assumptions must be explicitly acknowledged:
 
