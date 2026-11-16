@@ -1,0 +1,10 @@
+issuer,ticker,country,sector,scope1_tco2,scope2_tco2,revenue_usd,year,source_url
+ExxonMobil Corp,XOM,US,Integrated Oil & Gas,95000000,17000000,344582000000,2024,https://corporate.exxonmobil.com/sustainability-and-reports
+NextEra Energy Inc,NEE,US,Electric Utilities,41200000,3800000,28110000000,2024,https://www.nexteraenergy.com/sustainability.html
+Holcim Ltd,HOLN,Europe,Cement & Building Materials,74000000,4200000,30500000000,2024,https://www.holcim.com/sustainability
+TotalEnergies SE,TTE,Europe,Energy & Refining,36500000,4500000,237128000000,2024,https://totalenergies.com/sustainability
+Tata Steel Ltd,TATASTEEL,India,Steel & Metallurgy,31000000,3500000,28500000000,2024,https://www.tatasteel.com/investors/integrated-report
+NTPC Ltd,NTPC,India,Thermal Power Utility,238000000,2100000,21800000000,2024,https://www.ntpc.co.in/en/sustainability
+Microsoft Corp,MSFT,US,Technology & Cloud,120000,160000,245122000000,2024,https://www.microsoft.com/sustainability
+Pfizer Inc,PFE,US,Pharmaceuticals,850000,450000,58496000000,2024,https://www.pfizer.com/purpose/esg
+SAP SE,SAP,Europe,Enterprise Software,80000,70000,34000000000,2024,https://www.sap.com/sustainability.html

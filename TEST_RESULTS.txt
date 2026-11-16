@@ -1,0 +1,178 @@
+Recorded Test Run (UTC): 2026-11-15 06:59:20 UTC
+Python Version: Python 3.11.2
+
+=== 1. PYTEST ACCEPTANCE & PARITY SUITE (WITH COVERAGE) ===
+============================= test session starts ==============================
+platform linux -- Python 3.11.2, pytest-9.2.0, pluggy-1.7.0 -- /app/applet/.venv/bin/python3.11
+cachedir: .pytest_cache
+rootdir: /app/applet
+plugins: cov-7.1.0
+collecting ... collected 56 items
+
+tests/test_climate.py::test_zero_carbon_price_zero_haircut PASSED        [  1%]
+tests/test_climate.py::test_higher_price_bigger_haircut PASSED           [  3%]
+tests/test_climate.py::test_lower_pass_through_bigger_haircut PASSED     [  5%]
+tests/test_climate.py::test_haircut_matches_hand_calculation PASSED      [  7%]
+tests/test_climate.py::test_adjusted_spreads_never_below_baseline_and_monotonic_in_tenor PASSED [  8%]
+tests/test_climate.py::test_carbon_price_sensitivity_positive_and_monotone PASSED [ 10%]
+tests/test_climate.py::test_insolvency_and_uninformative_flags PASSED    [ 12%]
+tests/test_curves.py::test_round_trip_bootstrap PASSED                   [ 14%]
+tests/test_curves.py::test_credit_triangle_approximation PASSED          [ 16%]
+tests/test_curves.py::test_survival_prob_monotonic_decay PASSED          [ 17%]
+tests/test_curves.py::test_cs01_positive_and_magnitude PASSED            [ 19%]
+tests/test_curves.py::test_negative_forward_hazard_raises PASSED         [ 21%]
+tests/test_curves.py::test_raw_repricing_error_tolerance PASSED          [ 23%]
+tests/test_merton.py::test_calibration_satisfies_both_equations PASSED   [ 25%]
+tests/test_merton.py::test_spread_increases_with_vol_and_leverage PASSED [ 26%]
+tests/test_merton.py::test_merton_textbook_hull_worked_example PASSED    [ 28%]
+tests/test_merton.py::test_distance_to_default_monotonic_in_asset_cushion PASSED [ 30%]
+tests/test_merton.py::test_merton_zero_vol_limit PASSED                  [ 32%]
+tests/test_merton.py::test_raw_kappa_not_clipped PASSED                  [ 33%]
+tests/test_merton.py::test_credit_grades_first_passage_matches_monte_carlo PASSED [ 35%]
+tests/test_parity.py::test_hazard_and_merton_parity[XOM] PASSED          [ 37%]
+tests/test_parity.py::test_hazard_and_merton_parity[NEE] PASSED          [ 39%]
+tests/test_parity.py::test_hazard_and_merton_parity[HOLN] PASSED         [ 41%]
+tests/test_parity.py::test_hazard_and_merton_parity[TTE] PASSED          [ 42%]
+tests/test_parity.py::test_hazard_and_merton_parity[TATASTEEL] PASSED    [ 44%]
+tests/test_parity.py::test_hazard_and_merton_parity[NTPC] PASSED         [ 46%]
+tests/test_parity.py::test_hazard_and_merton_parity[MSFT] PASSED         [ 48%]
+tests/test_parity.py::test_hazard_and_merton_parity[PFE] PASSED          [ 50%]
+tests/test_parity.py::test_hazard_and_merton_parity[SAP] PASSED          [ 51%]
+tests/test_parity.py::test_climate_overlay_parity[net_zero_2050-XOM] PASSED [ 53%]
+tests/test_parity.py::test_climate_overlay_parity[net_zero_2050-NEE] PASSED [ 55%]
+tests/test_parity.py::test_climate_overlay_parity[net_zero_2050-HOLN] PASSED [ 57%]
+tests/test_parity.py::test_climate_overlay_parity[net_zero_2050-TTE] PASSED [ 58%]
+tests/test_parity.py::test_climate_overlay_parity[net_zero_2050-TATASTEEL] PASSED [ 60%]
+tests/test_parity.py::test_climate_overlay_parity[net_zero_2050-NTPC] PASSED [ 62%]
+tests/test_parity.py::test_climate_overlay_parity[net_zero_2050-MSFT] PASSED [ 64%]
+tests/test_parity.py::test_climate_overlay_parity[net_zero_2050-PFE] PASSED [ 66%]
+tests/test_parity.py::test_climate_overlay_parity[net_zero_2050-SAP] PASSED [ 67%]
+tests/test_parity.py::test_climate_overlay_parity[delayed_transition-XOM] PASSED [ 69%]
+tests/test_parity.py::test_climate_overlay_parity[delayed_transition-NEE] PASSED [ 71%]
+tests/test_parity.py::test_climate_overlay_parity[delayed_transition-HOLN] PASSED [ 73%]
+tests/test_parity.py::test_climate_overlay_parity[delayed_transition-TTE] PASSED [ 75%]
+tests/test_parity.py::test_climate_overlay_parity[delayed_transition-TATASTEEL] PASSED [ 76%]
+tests/test_parity.py::test_climate_overlay_parity[delayed_transition-NTPC] PASSED [ 78%]
+tests/test_parity.py::test_climate_overlay_parity[delayed_transition-MSFT] PASSED [ 80%]
+tests/test_parity.py::test_climate_overlay_parity[delayed_transition-PFE] PASSED [ 82%]
+tests/test_parity.py::test_climate_overlay_parity[delayed_transition-SAP] PASSED [ 83%]
+tests/test_parity.py::test_climate_overlay_parity[current_policies-XOM] PASSED [ 85%]
+tests/test_parity.py::test_climate_overlay_parity[current_policies-NEE] PASSED [ 87%]
+tests/test_parity.py::test_climate_overlay_parity[current_policies-HOLN] PASSED [ 89%]
+tests/test_parity.py::test_climate_overlay_parity[current_policies-TTE] PASSED [ 91%]
+tests/test_parity.py::test_climate_overlay_parity[current_policies-TATASTEEL] PASSED [ 92%]
+tests/test_parity.py::test_climate_overlay_parity[current_policies-NTPC] PASSED [ 94%]
+tests/test_parity.py::test_climate_overlay_parity[current_policies-MSFT] PASSED [ 96%]
+tests/test_parity.py::test_climate_overlay_parity[current_policies-PFE] PASSED [ 98%]
+tests/test_parity.py::test_climate_overlay_parity[current_policies-SAP] PASSED [100%]
+
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.11.2-final-0 ________________
+
+Name              Stmts   Miss  Cover   Missing
+-----------------------------------------------
+src/__init__.py       0      0   100%
+src/climate.py      101      6    94%   62-66, 187
+src/curves.py        86      9    90%   46-47, 55, 107, 159, 171-172, 192-193
+src/merton.py       103     15    85%   39, 48, 55, 72, 74, 98, 126, 128, 149, 164-165, 169-170, 173, 189
+-----------------------------------------------
+TOTAL               290     30    90%
+============================== 56 passed in 4.39s ==============================
+
+=== 2. DELIBERATE MUTATION CHECKS (VERIFYING TESTS CATCH BUGS) ===
+--- Mutation 1: Override recovery=0.0 in bootstrap ---
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________________ test_credit_triangle_approximation ______________________
+
+    def test_credit_triangle_approximation():
+        """Catches: Misformulation of CDS legs or recovery rate misuse by verifying s approx lambda * (1 - R)."""
+        tenors = [5.0]
+        spreads = [0.0100]  # 100 bp
+        recovery = 0.40
+    
+        curve = bootstrap(tenors, spreads, recovery=recovery, r=0.04)
+        expected_hazard = 0.0100 / (1.0 - recovery)  # 0.016667
+    
+>       assert abs(curve.hazard_rates[0] - expected_hazard) < 2e-4
+E       assert 0.006716536743943732 < 0.0002
+E        +  where 0.006716536743943732 = abs((0.009950129922722935 - 0.016666666666666666))
+
+tests/test_curves.py:34: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_curves.py::test_credit_triangle_approximation - assert 0.00...
+1 failed in 0.08s
+Mutation 1 pytest exit code: 1 (expected non-zero failure)
+
+--- Mutation 2: Omit (1 - tax) in asset_haircut ---
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____________________ test_haircut_matches_hand_calculation _____________________
+
+    def test_haircut_matches_hand_calculation():
+        """Catches: Formula transcription errors in DCF and terminal value discounting via hand-computed benchmark."""
+        h, tv, _ = asset_haircut(
+            1000.0,
+            np.array([100.0]),
+            np.array([1.0]),
+            pass_through=0.0,
+            wacc=0.10,
+            tax=0.0,
+            g=0.0,
+            include_terminal_value=True,
+        )
+        expected = (100000.0 / 1.1) + (100000.0 / 0.10 / 1.1)
+>       assert abs(h - expected) < 1e-6, f"Hand calculation mismatch: got {h}, expected {expected}"
+E       AssertionError: Hand calculation mismatch: got 1333333.3332999998, expected 1000000.0
+E       assert 333333.3332999998 < 1e-06
+E        +  where 333333.3332999998 = abs((1333333.3332999998 - 1000000.0))
+
+tests/test_climate.py:50: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_climate.py::test_haircut_matches_hand_calculation - Asserti...
+1 failed in 0.02s
+Mutation 2 pytest exit code: 1 (expected non-zero failure)
+
+--- Mutation 3: Perturb Merton V by +1% in merton_calibrate ---
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________________ test_hazard_and_merton_parity[XOM] ______________________
+
+issuer = {'id': 'xom', 'ticker': 'XOM', 'tenors': [1, 3, 5, 7, 10], 'proxySpreadsBp': [32, 46, 62, 75, 88], ...}
+
+    @pytest.mark.parametrize("issuer", FIXTURE["issuers"], ids=[i["ticker"] for i in FIXTURE["issuers"]])
+    def test_hazard_and_merton_parity(issuer):
+        """Python hazard rates, Merton calibration, and CreditGrades match TypeScript to < 1e-6."""
+        tenors = [float(t) for t in issuer["tenors"]]
+        spreads_dec = [s / 10000.0 for s in issuer["proxySpreadsBp"]]
+        r = issuer["riskFreeRate"]
+    
+        py_curve = bootstrap(tenors, spreads_dec, recovery=0.40, r=r)
+        for py_lam, ts_lam in zip(py_curve.hazard_rates, issuer["baseHazardRates"]):
+            assert abs(py_lam - ts_lam) < 1e-6, (
+                f"{issuer['ticker']} hazard mismatch: py={py_lam}, ts={ts_lam}"
+            )
+    
+        E = issuer["equityUsdB"] * 1e9
+        D = issuer["totalDebtUsdB"] * 1e9
+        py_merton = merton_calibrate(
+            E=E,
+            sigma_E=issuer["equityVol"],
+            D=D,
+            r=r,
+            T=5.0,
+            proxy_5y_spread=issuer["proxySpreadsBp"][2] / 10000.0,
+        )
+        ts_m = issuer["merton"]
+    
+>       assert abs(py_merton.V - ts_m["V"]) / max(1.0, ts_m["V"]) < 1e-6
+E       assert (4988078636.10498 / 498807863610.4995) < 1e-06
+E        +  where 4988078636.10498 = abs((503795942246.6045 - 498807863610.4995))
+E        +    where 503795942246.6045 = MertonResult(V=503795942246.6045, sigma_V=0.20508898820144364, d1=6.098396133041745, d2=5.6398032139866645, distance_t...des_spread_5y_bp=3.692935467628005e-05, credit_grades_asset_vol=0.21060216160576428, E=465000000000.0, D=41500000000.0).V
+E        +  and   498807863610.4995 = max(1.0, 498807863610.4995)
+
+tests/test_parity.py:54: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_parity.py::test_hazard_and_merton_parity[XOM] - assert (498...
+1 failed, 35 deselected in 0.04s
+Mutation 3 pytest exit code: 1 (expected non-zero failure)

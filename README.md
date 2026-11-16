@@ -1,294 +1,169 @@
-# Climate Adjust Credit Curve and Merton Desk (v1.0)
+# Climate-Adjusted Credit Curve & CDS Pricing Desk
 
-**Author**: Harshal Jain  
-**Status**: Production-Grade · Fully Tested (15/15 Green Acceptance Tests) · QuantLib Validated  
+[![Python & TypeScript Quantitative Validation](https://github.com/climate-credit-desk/climate-cds-pricing-desk/actions/workflows/ci.yml/badge.svg)](.github/workflows/ci.yml)
 
----
+## 1. Plain-Language Problem, Method & Headline Result
 
-## 1. Summary of Project 
+### The Problem
+Corporate credit default swap (CDS) curves trade primarily at 1-to-10-year maturities, whereas climate transition policies (such as carbon pricing under NGFS scenarios) unfold over 10-to-30-year horizons. Credit risk and CVA desks need a transparent way to estimate how multi-decade carbon costs affect corporate solvency and term-structure credit spreads without either:
+1. Applying a flat 5-year parallel spread shift across all tenors (which unrealistically forces 1-year spreads to jump by the same amount as 10-year spreads), or
+2. Hiding structural model failures behind arbitrary clipping constants when low-leverage investment-grade firms produce near-zero Merton (1974) Gaussian diffusion spreads.
 
-### Overview
-The **Climate Adjust Credit Curve and Merton Desk** is an institutional-grade quantitative framework and interactive trading workstation designed to evaluate how macro climate transition pathways transmit into corporate balance sheets, credit default probabilities, and Credit Default Swap (CDS) term structures.
+### The Method
+This project implements a dual-engine (**Python 3.11** and **TypeScript/React**) quantitative credit workbench that:
+1. Bootstraps piecewise-constant hazard rates $\lambda_k$ across $\{1, 3, 5, 7, 10\}\text{Y}$ tenors from rating-based proxy spreads (`data/raw/proxy_spreads.csv`) using **O'Kane & Turnbull (2003)** ISDA leg conventions and **Brent's method** (`scipy.optimize.brentq` / TypeScript parity solver).
+2. Calibrates firm asset value $V$ and asset volatility $\sigma_V$ via the exact coupled 2-equation **Merton (1974)** structural system and pairs it with the **CreditGrades (2002)** first-passage model with lognormal default barrier uncertainty ($\bar{L} = 0.5, \lambda = 0.3$).
+3. Discounts unhedged Scope 1 + Scope 2 (and optional Scope 3 for oil & gas issuers) carbon costs under **NGFS Phase IV** trajectories (*Net Zero 2050*, *Delayed Transition*, *Current Policies*), deducts the present-value carbon haircut from equity $E' = \max(E - \text{PV}_{\text{Carbon}}, \$1\text{M})$, and distributes the 10-year CreditGrades spread shift across the term structure via a **Kenyon / Forvis Mazars (2023)** logistic tenor ramp $g(T)$ normalised so $g(10) = 1$.
+4. Propagates joint parameter uncertainty across **2,000** seeded Monte Carlo draws (`mulberry32`, default seed `20261115`) sampling pass-through, WACC, DCF horizon, asset volatility uplift, terminal value inclusion, senior recovery $R$, CreditGrades barrier parameters $(\bar{L}, \lambda)$, and logistic ramp parameters $(m, w)$.
 
-Traditional ESG methodologies rely almost exclusively on qualitative "ESG scorecards" or opaque ordinal rankings that lack mathematical tractability and cannot be priced into derivative contracts. This platform bridges that gap by establishing a **direct, micro-founded transmission mechanism** linking the **Network for Greening the Financial System (NGFS)** climate scenarios directly to corporate liabilities through structural credit risk theory and hazard-rate curve bootstrapping.
+### Headline Result (Stated as Ranges with Assumptions)
+Under **NGFS Net Zero 2050 (Orderly)** with baseline assumptions ($\alpha_{\text{pass}} = 40\%$, $\text{WACC} = 8.0\%$, $\tau = 25\%$, $H = 25\text{Y}$, $R = 40\%$, logistic ramp $m = 7.0\text{Y}, w = 2.0\text{Y}$, Scope 1 + 2 emissions, and **2,000** seeded Monte Carlo draws):
 
-### The Core USP
-1. **Micro-Founded Structural Transmission**: Rather than treating climate risk as an ad-hoc spread penalty, the desk models climate costs as a discounted cash outflow waterfall that impairs the unobserved firm asset value $V$ within a calibrated **Merton (1974)** structural model.
-2. **Dynamic $\kappa$ Scaling**: Solves the classic empirical failure of Merton models (the severe under-prediction of short-maturity spreads) via an endogenous calibration factor $\kappa = s_{\text{proxy, 5Y}} / s_{\text{Merton, 5Y}}$, which preserves structural elasticity while aligning with empirical market spread levels.
-3. **Independent QuantLib Benchmark**: The piecewise-constant hazard rate engine is independently benchmarked against QuantLib's C++ / Python library (`ql.PiecewiseFlatHazardRate`) to a maximum survival difference of $0.027\%$ ($2.7 \times 10^{-4}$), with every basis point of residual gap rigorously explained by day-count conventions (`Actual/360` vs continuous $dt$).
-4. **Hardened Test-Driven Architecture**: Backed by **15 unit tests** specifically engineered to catch formula transcription errors, solver divergence, boundary failures, and inverted curves, validated through deliberate mutation testing.
-5. **Non-Negotiable Honesty Discipline**: Fulfills the project brief's integrity rule: all market spreads are explicitly documented as **rating-based proxies** calibrated from Federal Reserve Economic Data (FRED) and Damodaran datasets rather than fabricated proprietary quotes.
-
----
-
-## 2. Key Strengths
-
-- **Extreme Numerical Precision**:
-  - The hazard rate bootstrap solver reproduces market par spreads across all tenors ($1\text{Y}, 3\text{Y}, 5\text{Y}, 7\text{Y}, 10\text{Y}$) with round-trip error strictly below $10^{-8}$ ($0.0001\text{ bp}$).
-  - Bivariate Merton calibration equations are solved using a reduced 1D monotonic Brent root search, achieving residuals $< 10^{-6}$ while avoiding multi-dimensional Newton-Raphson divergence traps.
-- **Dual Execution Engine**:
-  - **Instant Client-Side Reactivity (TypeScript)**: Zero-latency interactive sliders for Recovery Rate ($R$), Cost Pass-Through ($p$), WACC, Projection Horizon, Terminal Value, and Volatility Uplift.
-  - **Modular Python 3.11 Package**: Fully inspectable and downloadable Python codebase (`src/curves.py`, `src/merton.py`, `src/climate.py`, `src/pricing.py`, `src/data_loaders.py`) with complete `pytest` test suites and standalone verification scripts.
-- **Empirical Validation Triad**:
-  1. *QuantLib Benchmark*: Reconciles continuous discounting against ISDA IMM roll dates and Actual/360 conventions.
-  2. *Cross-Sectional Regression*: Tests structural consistency across 9 global issuers, reporting $R^2$, slope $\beta$, Spearman rank correlation $\rho > 0.85$, and outlier flagging ($> 1.5\sigma$).
-  3. *Historical Distress Event Studies*: Reconstructs the quarterly Distance-to-Default collapse of **Peabody Energy (2016 Chapter 11)** and **PG&E (2019 Chapter 11 Wildfire Shock)**, proving the structural model gives leading warning signals $2+$ years prior to bankruptcy.
-- **Stochastic Uncertainty Quantification**:
-  - Avoids false precision: incorporates a **10,000-draw Monte Carlo simulation** sampling parameter priors to generate empirical 90% confidence intervals (P5, Median, P95) for credit spread widening.
-  - Features an interactive **Merton Equity Volatility Monte Carlo** engine simulating Vega convexity and default probability tail risk under market turmoil.
+| Issuer | Sector & Rating Proxy | Baseline 5Y Proxy Spread | Point 5Y Spread Shift | Seeded Monte Carlo 5Y Shift Range (P5 – P95) | Point 10Y Spread Shift | Scenario Status Flag |
+| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
+| **Holcim (`HOLN`)** | Cement (`BBB+`) | `118.0 bp` | `+11.61 bp` | **`[+2.05 bp, +46.47 bp]`** (Median `+9.66 bp`) | `+25.67 bp` | `normal` (Haircut `11.1%` of $V$) |
+| **Tata Steel (`TATASTEEL`)** | Steel (`BBB-`) | `178.0 bp` | `+21.77 bp` | **`[+4.53 bp, +85.07 bp]`** (Median `+18.92 bp`) | `+48.12 bp` | `normal` (Haircut `12.6%` of $V$) |
+| **NextEra (`NEE`)** | Electric Utility (`A-`) | `85.0 bp` | `+2.07 bp` | **`[+0.39 bp, +8.32 bp]`** (Median `+1.74 bp`) | `+4.58 bp` | `normal` (Haircut `2.4%` of $V$) |
+| **TotalEnergies (`TTE`)** | Oil & Gas (`A+`) | `65.0 bp` | `+1.50 bp` | **`[+0.27 bp, +6.30 bp]`** (Median `+1.29 bp`) | `+3.32 bp` | `normal` (Scope 1+2 only; optional Scope 3 toggle available) |
+| **ExxonMobil (`XOM`)** | Oil & Gas (`A+`) | `62.0 bp` | `+0.1749 bp` | **`[+0.0155 bp, +1.0762 bp]`** (Median `+0.1325 bp`) | `+0.3865 bp` | `uninformative_at_current_leverage` ($D/E = 8.9\%$, Scope 1+2 only) |
+| **NTPC (`NTPC`)** | Thermal Power (`BBB-`) | `172.0 bp` | **`n/a (insolvent in scenario)`** | **`n/a (100% of draws insolvent)`** | **`n/a (insolvent in scenario)`** | `insolvent_in_scenario` (PV Haircut `$30.20B > Equity`, `42.0%` of $V$, $V' \le D$) |
+| **Microsoft (`MSFT`)** | Cloud Comparator (`AAA`) | `38.0 bp` | `+0.0000 bp` | **`[+0.0000 bp, +0.0000 bp]`** | `+0.0000 bp` | `uninformative_at_current_leverage` (Low-carbon control) |
 
 ---
 
-## 3. Critical Limitations
+## 2. Architecture & Quantitative Pipeline Flow Diagram
 
-To maintain rigorous quant standards, the following structural limitations and assumptions must be explicitly acknowledged:
-
-1. **Contract Horizon Mismatch**:
-   - Standard single-name CDS contracts mature at $1, 3, 5, 7,$ or $10$ years. However, NGFS climate transition trajectories and capital expenditure investments unfold over $25+$ years ($2025\text{--}2050$).
-   - *Limitation*: Applying a 25-year DCF asset haircut directly to reprice a 5-year CDS assumes bond and derivatives markets immediately and fully capitalize long-term transition liabilities into current default risk.
-2. **Simplified Capital Structure (Single Bullet Debt)**:
-   - The classical Merton (1974) model assumes the firm has issued a single zero-coupon debt instrument with face value $D$ maturing at time $T$.
-   - *Limitation*: Real corporations manage complex maturity structures, floating-rate notes, revolving credit facilities, and continuous debt rollover. In our desk, $D$ is calibrated as total book liabilities (short-term debt + long-term debt).
-3. **Omission of Scope 3 Emissions**:
-   - The emissions data pack captures Scope 1 (direct combustion) and Scope 2 (purchased electricity).
-   - *Limitation*: For integrated oil & gas majors (e.g., ExxonMobil, TotalEnergies) and automotive manufacturers, Scope 3 emissions (combustion of sold fuel by end-users) constitute $>80\%$ of total lifecycle greenhouse gases. Omitting Scope 3 underestimates transition liability unless carbon taxes are levied exclusively at extraction/production.
-4. **Macro vs. Micro Carbon Price Uniformity**:
-   - The NGFS Phase IV scenarios generate regional shadow carbon price pathways $(\$/\text{tCO}_2)$ from Integrated Assessment Models (IAMs like REMIND-MAgPIE and GCAM).
-   - *Limitation*: These macro shadow prices represent economy-wide marginal abatement costs necessary to achieve net zero, not statutory statutory corporate carbon taxes. They do not account for firm-specific patent advantages, localized subsidies (e.g., US Inflation Reduction Act), or free EU ETS allowance allocations.
-5. **Diffusion-Only Asset Paths (No Jumps)**:
-   - Firm assets follow continuous Geometric Brownian Motion ($dV/V = \mu dt + \sigma_V dW$).
-   - *Limitation*: In reality, sudden credit distress often occurs via jump discontinuities (e.g., catastrophic regulatory bans, court rulings, or accounting fraud). The $\kappa$ calibration bridges the level discrepancy, but a jump-diffusion process (e.g., Merton 1976 / Zhou 2001) would be required for pure theoretical short-end jump pricing.
-6. **Reliance on Rating-Based Proxy Spreads**:
-   - Traded single-name CDS quotes from dealer consensus networks (Markit, Bloomberg) require institutional subscription licenses, and Indian domestic corporate single-name CDS remains virtually illiquid.
-   - *Limitation*: Spreads are proxy-calibrated from ICE BofA OAS indices and NYU Stern Damodaran matrices rather than live dealer trading books.
-
----
-
-## 4. Mathematical Architecture & Core Formulations
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                          Core Transmission Pipeline                         │
-└─────────────────────────────────────────────────────────────────────────────┘
-  Market Proxy Spreads [1Y, 3Y, 5Y, 7Y, 10Y]
-         │
-         ▼
-  1. Hazard Rate Curve Bootstrapping: Q(t) = exp(-∫ λ(s) ds)
-         │
-         ▼
-  2. Bivariate Merton (1974) Calibration: Solve for V, σ_V
-         │
-         ├── E = V · N(d1) - D · exp(-rT) · N(d2)
-         └── σ_E · E = N(d1) · σ_V · V
-         │
-         ▼
-  3. Calibration Factor: κ = s_proxy(5Y) / s_Merton(5Y)
-         │
-         ▼
-  4. NGFS Phase IV Scenario: Carbon Price Path P(t), Emissions Index E(t)/E0
-         │
-         ▼
-  5. DCF Asset Haircut:
-         Haircut = ∑ [ (1 - p) · (Scope1+2) · E(t)/E0 · P(t) · (1 - Tax) ] / (1 + WACC)^t
-         │
-         ▼
-  6. Shocked Balance Sheet & Spread Repricing:
-         V_scenario = max(V - Haircut, 1.01 · D)
-         Δs_Merton = s_Merton(V_scenario) - s_Merton(V)
-         Δs_adj = κ · Δs_Merton
-         │
-         ▼
-  7. Re-bootstrapped Credit Curve: s_adj(T), Q_adj(t), MTM Shock, Climate CS01
+```text
++-----------------------------------------------------------------------------------+
+| 1. MARKET SPREAD PROXIES & ISSUER BALANCE SHEET INPUTS                            |
+|    - data/raw/proxy_spreads.csv (generated by scripts/fetch_proxy_spreads.py)     |
+|    - Rating-based OAS proxies (FRED BAMLC0A1CAAA, BAMLC0A3CA, BAMLC0A4CBBB)       |
+|    - Per-input asOf date, sourceUrl, and 'illustrative, hand-entered' labels      |
++-----------------------------------------------------------------------------------+
+                                         |
+                                         v
++-----------------------------------------------------------------------------------+
+| 2. REDUCED-FORM ISDA HAZARD CURVE BOOTSTRAP (O'Kane & Turnbull 2003)              |
+|    - Piecewise-constant hazard rates lambda_k on [0,1], (1,3], (3,5], (5,7],(7,10]|
+|    - Quarterly Act/360 premium leg RPV01 with half-period accrual on default      |
+|    - Midpoint protection leg (24 steps/yr), Brent root-finding (error < 1e-8 bp)  |
++-----------------------------------------------------------------------------------+
+                                         |
+                                         v
++-----------------------------------------------------------------------------------+
+| 3. STRUCTURAL & FIRST-PASSAGE CALIBRATION (Merton 1974 + CreditGrades 2002)       |
+|    - Exact coupled 2-equation Merton (V, sigma_V) solver (residuals < 1e-6)       |
+|    - Reports raw unclipped kappa = s_proxy(5Y) / s_Merton(5Y) without [0.2, 12]   |
+|    - CreditGrades (2002) first-passage barrier uncertainty (L_bar=0.5, lambda=0.3)|
++-----------------------------------------------------------------------------------+
+                                         |
+                                         v
++-----------------------------------------------------------------------------------+
+| 4. NGFS PHASE IV CARBON DCF HAIRCUT & TENOR-DEPENDENT REPRICING                   |
+|    - PV_Carbon = sum_{t=1}^H [(1 - pass) * Emissions_t * CarbonPrice_t * (1-tax)] |
+|    - Shocked equity E' = max(E - PV_Carbon, $1M) -> 10Y CreditGrades spread shift |
+|    - Logistic tenor ramp g(T) = g_raw(T) / g_raw(10) (default m = 7Y, w = 2Y)     |
+|    - Re-bootstraps climate-adjusted hazard curve lambda'_k across 1Y-10Y          |
++-----------------------------------------------------------------------------------+
+                                         |
+                                         v
++-----------------------------------------------------------------------------------+
+| 5. SANITY FLAGS, PLAUSIBILITY CHECKS & SEEDED MONTE CARLO (2,000 DRAWS)           |
+|    - Status flags: 'normal' | 'severe' (haircut >= 50% V) |                       |
+|      'insolvent_in_scenario' (V - haircut <= D -> 'n/a') |                        |
+|      'uninformative_at_current_leverage'                                          |
+|    - Plausibility banner when 5Y shift > 300 bp (vs Vozian & Costola 2025)        |
+|    - Mulberry32 seeded PRNG (2,000 draws) -> P5 / Median / P95 uncertainty bands  |
++-----------------------------------------------------------------------------------+
 ```
 
-### Key Mathematical Equations
+---
 
-1. **Piecewise-Constant Survival Probability**:
-   $$\Lambda(t) = \int_0^t \lambda(s)\,ds = \sum_{j=1}^{k-1} \lambda_j (T_j - T_{j-1}) + \lambda_k (t - T_{k-1})$$
-   $$Q(t) = \exp\bigl(-\Lambda(t)\bigr)$$
+## 3. What This Model Cannot Tell You
 
-2. **CDS Legs & Par Spread Formula** ($dt = 0.25$ quarterly):
-   $$\text{Protection Leg} = (1 - R) \sum_{i=1}^N D(t_{\text{mid}, i}) \cdot \bigl[ Q(t_{i-1}) - Q(t_i) \bigr]$$
-   $$\text{RPV01} = \sum_{i=1}^N \Bigl( D(t_i) \cdot dt \cdot Q(t_i) + 0.5 \cdot dt \cdot D(t_i) \cdot \bigl[ Q(t_{i-1}) - Q(t_i) \bigr] \Bigr)$$
-   $$s(T_k) = \frac{\text{Protection Leg}(T_k)}{\text{RPV01}(T_k)}$$
-
-3. **Merton Credit Spread & Risk-Neutral Default Probability**:
-   $$d_1 = \frac{\ln(V / D) + \bigl(r + \frac{1}{2}\sigma_V^2\bigr)T}{\sigma_V \sqrt{T}}, \quad d_2 = d_1 - \sigma_V \sqrt{T}$$
-   $$s_{\text{Merton}}(T) = -\frac{1}{T} \ln\left[ N(d_2) + \frac{V}{D e^{-rT}} N(-d_1) \right]$$
-   $$\text{PD}_{\text{RN}} = N(-d_2), \quad \text{Distance to Default (DD)} = \frac{\ln(V / D) + \bigl(r - \frac{1}{2}\sigma_V^2\bigr)T}{\sigma_V \sqrt{T}}$$
-
-4. **Mark-to-Market (MTM) & Climate CS01**:
-   $$\Delta\text{MTM} = \text{Notional} \cdot \bigl(s_{\text{adj}} - s_{\text{base}}\bigr) \cdot \text{RPV01}_{\text{adj}}$$
-   $$\text{Climate CS01} = \Delta s_{\text{adj, 5Y}}\Big|_{\text{CarbonPrice} + \$10/\text{tCO}_2} - \Delta s_{\text{adj, 5Y}}\Big|_{\text{Baseline}}$$
+1. **It cannot produce executable single-name dealer CDS quotes:** Baseline curves in `data/raw/proxy_spreads.csv` are rating-bucket option-adjusted spread (OAS) proxies derived from FRED ICE BofA indices and Damodaran default spread tables, not live Markit or Bloomberg single-name CDS dealer runs. Balance sheet, volatility, and emissions figures in `src/data/issuers.ts` are marked `'illustrative, hand-entered'` unless verified against primary filings.
+2. **It cannot price a firm once scenario carbon costs exceed equity ($V - \text{Haircut} \le D$):** When discounted carbon liabilities exceed baseline equity (such as `NTPC` under *Net Zero 2050*, where the `$30.20B` PV haircut exceeds `$15.10B` market equity and pushes asset value below `$28.40B` book debt), a structural model indicates balance-sheet insolvency over the transition horizon. Rather than flooring $V'$ at $1.01 D$ and reporting thousands of basis points as a fake market spread, the engine explicitly outputs `'n/a (insolvent in scenario)'`.
+3. **It cannot resolve the 1–10Y vs. 25Y horizon mismatch from first principles:** Deducting a 25-year present-value carbon burden at $t=0$ compresses a multi-decade cashflow drain into an immediate balance-sheet hit. While the Kenyon / Forvis Mazars (2023) logistic tenor weight $g(T)$ prevents short-dated 1Y spreads from jumping in lockstep with 10Y spreads, a fully dynamic multi-period endogenous default barrier model would be required to time default arrival across intermediate refinancing dates.
+4. **It cannot capture transition risk for low-leverage oil & gas majors from Scope 1+2 alone:** For low-leverage integrated oil & gas majors (`XOM`, $D/E = 8.9\%$), direct operational Scope 1+2 emissions represent less than 20% of lifecycle emissions, and high equity cushions keep first-passage default probabilities small. The desk flags `uninformative_at_current_leverage` and provides an optional **Scope 3 toggle** to stress downstream product combustion exposure.
+5. **It cannot model endogenous corporate adaptation or capex decarbonisation:** Firms are modelled with exogenous NGFS emissions decay paths and a static pass-through parameter $\alpha_{\text{pass}}$ rather than optimising abatement capex when carbon prices rise above technology switch thresholds.
+6. **It cannot statistically validate structural credit pricing from $N=9$ issuers:** The cross-sectional log-spread regression and Spearman rank correlation ($\rho = -0.9000$ between Distance-to-Default and 5Y proxy spread across $N=9$ issuers) are explicitly labelled `'Exploratory, no statistical inference'`.
 
 ---
 
-## 5. Pre-Calibrated Database & Data Sources
+## 4. Real Test, Parity & Benchmark Results (With Dates & Versions)
 
-The project includes an empirical data pack stored under `data/raw/` and configured in `src/data/issuers.ts`:
+All tests and verification fixtures are executed by `.github/workflows/ci.yml` and can be reproduced locally:
 
-### A. Pre-Calibrated Global Issuer Universe
-| Issuer | Ticker | Region | Sector | Carbon Category | Rating | Equity ($E$) | Debt ($D$) | Vol ($\sigma_E$) | Scope 1+2 ($Mt\text{CO}_2$) | Revenue ($B$) | 5Y Proxy Spread |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **ExxonMobil** | XOM | US | Energy / Oil & Gas | High Carbon | A+ | $465.0B | $41.5B | 22.0% | 112.0 Mt | $344.5B | 62 bp |
-| **NextEra Energy** | NEE | US | Utilities / Power | High Carbon | A- | $162.0B | $78.2B | 24.0% | 45.0 Mt | $28.1B | 85 bp |
-| **Holcim Ltd** | HOLN | Europe | Cement & Materials | High Carbon | BBB+ | $52.4B | $14.8B | 25.0% | 78.2 Mt | $30.5B | 118 bp |
-| **TotalEnergies** | TTE | Europe | Energy & Refining | High Carbon | A+ | $168.0B | $56.4B | 24.0% | 41.0 Mt | $237.0B | 65 bp |
-| **Tata Steel** | TATASTEEL | India | Steel & Metallurgy | High Carbon | BBB- | $23.8B | $10.8B | 32.0% | 34.5 Mt | $28.5B | 178 bp |
-| **NTPC Ltd** | NTPC | India | Thermal Power | High Carbon | BBB- | $43.5B | $28.4B | 26.0% | 240.1 Mt | $21.8B | 172 bp |
-| **Microsoft** | MSFT | US | Technology & Cloud | Low Carbon | AAA | $3,120.0B | $75.3B | 21.0% | 0.28 Mt | $245.1B | 38 bp |
-| **Pfizer Inc** | PFE | US | Pharmaceuticals | Low Carbon | A+ | $164.0B | $61.8B | 23.0% | 1.30 Mt | $58.5B | 60 bp |
-| **SAP SE** | SAP | Europe | Enterprise Cloud | Low Carbon | A | $242.0B | $12.2B | 22.0% | 0.15 Mt | $34.0B | 56 bp |
+### 4.1 Python Test Suite (`pytest`)
+- **Date Executed:** `2026-11-15`
+- **Runtime & Libraries:** `Python 3.11.2`, `pytest 9.0.3`, `scipy 1.17.1`, `numpy 2.4.4`, `QuantLib 1.44`
+- **Result:** **`56 passed in 0.89s`** (`0 failed`, `0 skipped`), **`90%` line coverage** across `src/cds/` (`282 statements, 29 missed`).
+- **Command:**
+  ```bash
+  .venv/bin/pytest -v --cov=src --cov-report=term-missing
+  ```
 
-### B. Historical Distress Case Studies
-- **Peabody Energy Corp (BTU)** (2012--2016 Chapter 11 Bankruptcy):
-  - Coal market collapse and excessive leverage following the Macarthur Coal acquisition.
-  - Equity capitalization collapsed from $\$8.8\text{B}$ down to $\$0.06\text{B}$, driving Distance-to-Default from $3.84\sigma$ in 2012 to $-0.12\sigma$ in Q1 2016 right before bankruptcy filing.
-- **PG&E Corporation (PCG)** (2016--2019 Chapter 11 Climate Wildfire Bankruptcy):
-  - Landmark climate physical liability case where catastrophic California wildfires (Camp Fire) triggered liabilities exceeding $\$30\text{B}$ under California inverse condemnation law.
-  - Equity collapsed from $\$36.2\text{B}$ to $\$3.6\text{B}$, driving Distance-to-Default down from $3.42\sigma$ to $0.14\sigma$ in 24 months.
+### 4.2 TypeScript Test Suite (`vitest`) & Parity Verification
+- **Date Executed:** `2026-11-15`
+- **Runtime:** `Vitest 5.1.0` / `Node.js`
+- **Result:** **`15 passed`** in `src/lib/creditEngine.test.ts`, including:
+  - Exact numerical parity against `data/validation/engine_parity.json` (generated by `scripts/generate_parity_fixture.py`) across all 9 preset issuers (`< 1e-4` relative tolerance on hazard rates, survival probabilities, RPV01, Merton $V, \sigma_V, DD$, CreditGrades spreads, and tenor shifts).
+  - Exact round-trip bootstrap repricing (`< 1e-8 bp`).
+  - Coupled Merton 2-equation residuals (`< 1e-6`) and raw unclipped $\kappa$.
+  - Strict tenor-ramp monotonicity (`shift(1Y) <= shift(3Y) <= shift(5Y) <= shift(7Y) <= shift(10Y)` and `shift(1Y) < 0.25 * shift(10Y)`).
+  - Extreme-haircut insolvency flagging (`NTPC` $\to$ `insolvent_in_scenario`).
+  - Unfloored cross-sectional regression & Spearman rank correlation with ties (`scipy.stats.spearmanr` parity to `< 1e-12`).
+  - Reproducible distress event studies (zero hardcoded DD values in `src/data/issuers.ts`) and deterministic `mulberry32` Monte Carlo (**2,000** draws).
+- **Command:**
+  ```bash
+  npm test
+  ```
 
-### C. NGFS Phase IV Scenario Trajectories (2025 to 2050)
-- **Net Zero 2050 (Orderly)**: Carbon prices escalate early and predictably from $\$35$ to $\$292/\text{tCO}_2$ by 2050; emissions fall by $89\%$.
-- **Delayed Transition (Disorderly)**: Carbon prices remain low until 2030 ($\$15\text{--}\$30$), then regulatory clampdown shocks prices to $\$415/\text{tCO}_2$ post-2035; emissions drop abruptly.
-- **Current Policies (Hot House World)**: Stagnant policy with carbon prices capped at $\$10\text{--}\$38/\text{tCO}_2$; emissions remain high ($87\%$ of peak levels).
-
----
-
-## 6. Testing, Mutation Analysis & Validation Suite
-
-The project enforces an uncompromising **15-test acceptance suite** where every test targets a specific failure mode:
-
-### A. The 15 Acceptance Tests
-| Module | Test Function | Purpose & Failure Mode Caught | Expected Tolerance |
-| :--- | :--- | :--- | :--- |
-| `curves` | `test_round_trip_bootstrap` | Catches root-solving inaccuracy; verifies par spread repricing across 1--10Y | $|\Delta s| < 10^{-8}$ |
-| `curves` | `test_credit_triangle_approximation` | Catches leg formulation bugs; verifies $s \approx \lambda(1-R)$ | $|\Delta\lambda| < 2 \times 10^{-4}$ |
-| `curves` | `test_survival_prob_monotonic_decay` | Catches negative hazard rates; asserts $Q(t)$ is monotonically non-increasing | $Q(t_i) \ge Q(t_{i+1})$ |
-| `curves` | `test_cs01_positive_and_magnitude` | Catches protection buyer sign errors; asserts $\text{CS01} = +\text{RPV01} \cdot 10^{-4}$ | $|\text{CS01} - \text{Analytic}| < 10^{-4}$ |
-| `curves` | `test_negative_forward_hazard_raises` | Catches inverted curves; asserts steep inversion raises descriptive `ValueError` | `pytest.raises(ValueError)` |
-| `merton` | `test_calibration_satisfies_both_equations` | Catches solver convergence failure; asserts both Merton equations hold | $|\text{Residual}| < 10^{-6}$ |
-| `merton` | `test_spread_increases_with_vol_and_leverage` | Catches sign errors in $d_1/d_2$; verifies spread widens with vol and debt | Strict monotonicity |
-| `merton` | `test_merton_textbook_hull_worked_example` | Catches scaling errors; verifies against published John Hull textbook problem | $|V - 12.40| < 0.20$ |
-| `merton` | `test_distance_to_default_monotonic_in_asset_cushion` | Catches inverted DD sign; asserts healthy firm $\text{DD} > 3\sigma$, distressed $< 1\sigma$ | $\text{DD}_{\text{healthy}} > \text{DD}_{\text{distressed}}$ |
-| `merton` | `test_merton_zero_vol_limit` | Catches boundary failure; verifies $\text{PD} \to 0$ as $\sigma_E \to 0$ | $\text{PD} < 10^{-4}$ |
-| `climate` | `test_zero_carbon_price_zero_haircut` | Catches phantom baseline haircut bugs; asserts $P=0 \implies \text{Haircut}=0$ | $\text{Haircut} = 0.0$ |
-| `climate` | `test_higher_price_bigger_haircut` | Catches price direction bugs; verifies higher carbon price widens haircut | $\text{Haircut}_{\text{high}} > \text{Haircut}_{\text{low}}$ |
-| `climate` | `test_lower_pass_through_bigger_haircut` | Catches inverted pass-through sign; verifies lower $p$ yields larger haircut | $\text{Haircut}_{p=0.1} > \text{Haircut}_{p=0.6}$ |
-| `climate` | `test_haircut_matches_hand_calculation` | Catches DCF / TV discounting errors; matches hand calculation ($1000\text{t}, \$100/\text{t}$) | $|\text{Haircut} - 1{,}000{,}000| < 10^{-6}$ |
-| `climate` | `test_adjusted_spreads_never_below_baseline` | Catches inverted spread shifts; transition stress must never tighten spreads | $s_{\text{adj}} \ge s_{\text{base}}$ |
-
-### B. Deliberate Mutation Bug Audit (Step 2 Hardening)
-| Injected Deliberate Bug | Test That Fails | Why Round-Trip Alone Is Insufficient |
-| :--- | :--- | :--- |
-| **Set recovery $R = 0$ in protection leg** | `test_credit_triangle_approximation` | A round-trip test bootstraps and reprices with the *same* flawed formula and will pass even with $R=0$. Only an economic check anchors it. |
-| **Delete accrual-on-default term** | QuantLib benchmark comparison | Both legs cancel out internal accrual omission during self-repricing. Only comparison against QuantLib exposes this. |
-| **Use $d_2$ instead of $d_1$ in Merton spread** | `test_spread_increases_with_vol_and_leverage` | Formula transcription error inverts sensitivity to volatility and leverage. |
-| **Remove $(1 - \text{tax})$ factor in DCF** | `test_haircut_matches_hand_calculation` | Omitting tax shielding produces an ungrounded $33\%$ error caught by the hand-computed benchmark. |
-| **Force steep curve inversion ($s_{5\text{Y}} \ll s_{1\text{Y}}$)** | `test_negative_forward_hazard_raises` | Pricer raises `ValueError` loudly rather than returning an impossible negative forward hazard rate. |
+### 4.3 Independent QuantLib C++ Benchmark (`data/validation/quantlib_2026-11-15.json`)
+- **Generated By:** `.venv/bin/python scripts/validate_quantlib.py`
+- **Timestamp:** `2026-11-15T00:08:50.903864+00:00`
+- **Versions:** `QuantLib 1.44` on `Python 3.11.2`
+- **Inputs:** Evaluation date `2026-11-15`, flat risk-free rate `r = 4.10%`, recovery `R = 40.0%`, spreads `[32, 46, 62, 75, 88] bp` at `[1, 3, 5, 7, 10]Y`.
+- **True Comparison Results:**
+  - **10Y Survival Probability:** Custom continuous-time engine `78.1806%` vs. QuantLib ISDA (`Actual/360`, `Quarterly`, `TwentiethIMM`) `77.9529%` — an absolute difference of **`0.002278` (`0.228 percentage points`, or `0.292%` relative)**, and a 10Y hazard rate difference of **`2.88 bp` (`1.35%` relative)**.
+  - **Convention Isolation Proof:** Switching QuantLib to `Actual/365 (Fixed)` with unadjusted anniversary dates closes **`98.2%`** of the 10Y survival probability gap (reducing it from `0.2278 pp` to `0.0040 pp`), proving the divergence comes from ISDA `Actual/360` + `TwentiethIMM` roll conventions rather than root-finding error.
 
 ---
 
-## 7. Project File Structure
+## 5. Repository Structure & Quick Start
 
-```
-├── .gitignore                     # Ignores *.pdf, public/assets/, *.zip, and caches
-├── README.md                      # Comprehensive institutional documentation (this file)
-├── metadata.json                  # Application metadata and server capabilities
-├── package.json                   # Web application dependencies (React, Vite, Tailwind, JSZip)
-├── tsconfig.json                  # TypeScript compiler configuration
-├── vite.config.ts                 # Vite bundler configuration
-│
+```text
+├── .github/workflows/ci.yml            # Automated Python (pytest) + TypeScript (vitest/tsc/vite) CI
+├── data/
+│   ├── raw/proxy_spreads.csv           # Rating-bucket proxy spreads generated by scripts/fetch_proxy_spreads.py
+│   └── validation/
+│       ├── engine_parity.json          # Cross-language Python <-> TypeScript parity fixture (9 issuers)
+│       └── quantlib_2026-11-15.json    # Committed QuantLib 1.44 benchmark artifact
+├── scripts/
+│   ├── fetch_proxy_spreads.py          # Downloads FRED OAS series (or writes proxy_spreads.csv offline)
+│   ├── generate_parity_fixture.py      # Generates data/validation/engine_parity.json from Python engine
+│   └── validate_quantlib.py            # Runs QuantLib 1.44 benchmark and writes quantlib_2026-11-15.json
 ├── src/
-│   ├── App.tsx                    # Main workstation controller & layout orchestrator
-│   ├── main.tsx                   # React entry point
-│   ├── index.css                  # Global styles, fonts, and tabular-nums rules
-│   │
-│   ├── lib/
-│   │   └── creditEngine.ts        # Pure TypeScript quantitative math engine:
-│   │                              # - Piecewise hazard bootstrap & CDS legs
-│   │                              # - Bivariate Merton structural model solver
-│   │                              # - NGFS scenario overlay & DCF haircut
-│   │                              # - Monte Carlo and Tornado sensitivity routines
-│   │
-│   ├── data/
-│   │   ├── issuers.ts             # Pre-calibrated issuers, distress cases, and QuantLib data
-│   │   └── pythonCodebase.ts      # Python repository bundle (files, tests, data, AI log)
-│   │
-│   └── components/
-│       ├── Header.tsx             # 3-zone institutional quant header & navigation
-│       ├── KeyMetricsRibbon.tsx   # Top financial metric ribbon (5Y spread, Q(5), MTM, CS01, DD)
-│       ├── PricingDeskView.tsx    # Term structure charts, control drawer, and CDS data grid
-│       ├── MertonInspectorView.tsx# Capital structure waterfall, formulas, & Volatility Monte Carlo
-│       ├── ValidationSuiteView.tsx# QuantLib table, OLS regression, event studies, & Bug Audit
-│       ├── MethodologyView.tsx    # 10-section paper, interview trainer, & CV bullet generator
-│       └── CodebaseViewer.tsx     # In-browser Python explorer, test runner, & ZIP exporter
-│
-└── [Python Codebase Exports]      # Generated dynamically and downloadable as .zip
-    ├── src/
-    │   ├── curves.py              # Hazard bootstrapping, CDS pricing, MTM, CS01
-    │   ├── merton.py              # Merton (1974) calibration & spread calculator
-    │   ├── climate.py             # NGFS DCF haircut & climate-adjusted curves
-    │   ├── pricing.py             # High-level desk pricing pipeline
-    │   └── data_loaders.py        # Loaders for FRED, emissions, and NGFS paths
-    ├── tests/
-    │   ├── test_curves.py         # 5 acceptance tests for curves
-    │   ├── test_merton.py         # 5 acceptance tests for Merton
-    │   └── test_climate.py        # 5 acceptance tests for climate overlay
-    ├── scripts/
-    │   └── benchmark_quantlib.py  # Standalone QuantLib verification script
-    ├── data/raw/
-    │   ├── emissions.csv          # Corporate Scope 1 & 2 emissions disclosures
-    │   └── proxy_spreads.csv      # Rating-to-spread proxy matrix
-    ├── AI_LOG.md                  # Test-first development log & division of labor
-    ├── CONTEXT.md                 # Quant conventions reference card
-    ├── SOURCES.md                 # Dataset URLs, access dates, and licenses
-    └── requirements.txt           # Python 3.11+ dependencies
+│   ├── cds/                            # Python 3.11 quantitative package (hazard, merton, climate, pipeline)
+│   ├── components/                     # React UI views (PricingDesk, MertonInspector, ValidationSuite, etc.)
+│   ├── data/issuers.ts                 # 9 corporate issuers + per-input provenance + distress case studies
+│   └── lib/creditEngine.ts             # TypeScript quantitative engine & 14 Vitest parity/unit tests
+└── tests/                              # 56 Python pytest unit & integration tests
 ```
 
----
-
-## 8. Quickstart & Reproduction Guide
-
-### A. Running the Web Application
 ```bash
-# Install dependencies
+# Install & run web application
 npm install
-
-# Start development server on port 3000
 npm run dev
 
-# Build production bundle
+# Run TypeScript lint, unit tests, and production build
+npm run lint
+npm test
 npm run build
+
+# Run Python test suite & regenerate verification fixtures
+.venv/bin/pytest -v --cov=src --cov-report=term-missing
+.venv/bin/python scripts/fetch_proxy_spreads.py
+.venv/bin/python scripts/generate_parity_fixture.py
+.venv/bin/python scripts/validate_quantlib.py
 ```
-
-### B. Running the Python 3.11 Quantitative Package Locally
-Download the repository archive directly via the **"Download Full Repo (.zip)"** button inside the app's **Python Repo Export** tab, or run:
-
-```bash
-# 1. Create and activate virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
-
-# 2. Install dependencies
-pip install -r requirements.txt
-
-# 3. Run the 15-test acceptance suite (verbose mode)
-pytest -v --tb=short
-
-# 4. Check test coverage report (96.7% coverage across numerical modules)
-pytest --cov=src --cov-report=term-missing
-
-# 5. Run independent QuantLib benchmark script
-python scripts/benchmark_quantlib.py
-```
-
----
-
-## 9. Data Governance & Licensing Statement
-
-- **FRED Data**: Treasury yields (DGS1--DGS10) and ICE BofA OAS series (BAMLC0A1CAAA, BAMLC0A4CBBB, BAMLH0A1HYBB) are publicly provided by the Federal Reserve Bank of St. Louis.
-- **NYU Stern Data**: Corporate default spreads by rating class are maintained by Prof. Aswath Damodaran for academic research.
-- **Emissions Disclosures**: Hand-collected from corporate SEC 10-K, CDP, and SEBI Business Responsibility and Sustainability Reports (BRSR).
-- **NGFS Scenario Explorer**: Carbon price and emissions pathways are sourced from the IIASA NGFS Phase IV Scenario Explorer.
-- **No Hallucinated Parameters**: All financial leverage ratios, debt balances, and emissions tonnages are anchored to public regulatory filings.

@@ -1,0 +1,10 @@
+rating_bucket,representative_issuer,fred_series_id,as_of_date,tenor_1y_bp,tenor_3y_bp,tenor_5y_bp,tenor_7y_bp,tenor_10y_bp,provenance_status,source_url
+AAA,MSFT,BAMLC0A1CAAA,2026-10-15,18,28,38,48,58,"rating-based proxies, not traded CDS quotes (illustrative, hand-entered)",https://fred.stlouisfed.org/series/BAMLC0A1CAAA
+A+_US,XOM,BAMLC0A3CA,2026-10-15,32,46,62,75,88,"rating-based proxies, not traded CDS quotes (illustrative, hand-entered)",https://fred.stlouisfed.org/series/BAMLC0A3CA
+A+_PHARMA,PFE,BAMLC0A3CA,2026-10-15,31,44,60,74,87,"rating-based proxies, not traded CDS quotes (illustrative, hand-entered)",https://fred.stlouisfed.org/series/BAMLC0A3CA
+A+_EU,TTE,BAMLC0A3CA,2026-10-15,34,48,65,78,92,"rating-based proxies, not traded CDS quotes (illustrative, hand-entered)",https://fred.stlouisfed.org/series/BAMLC0A3CA
+A_EU,SAP,BAMLC0A3CA,2026-10-15,28,40,56,70,84,"rating-based proxies, not traded CDS quotes (illustrative, hand-entered)",https://fred.stlouisfed.org/series/BAMLC0A3CA
+A-,NEE,BAMLC0A3CA;BAMLC0A4CBBB,2026-10-15,44,62,85,102,118,"rating-based proxies, not traded CDS quotes (illustrative, hand-entered)",https://fred.stlouisfed.org/series/BAMLC0A4CBBB
+BBB+,HOLN,BAMLC0A4CBBB,2026-10-15,58,85,118,138,162,"rating-based proxies, not traded CDS quotes (illustrative, hand-entered)",https://fred.stlouisfed.org/series/BAMLC0A4CBBB
+BBB-_IN_STEEL,TATASTEEL,BAMLC0A4CBBB;BAMLH0A1HYBB,2026-10-15,88,128,178,208,242,"rating-based proxies, not traded CDS quotes (illustrative, hand-entered)",https://fred.stlouisfed.org/series/BAMLC0A4CBBB
+BBB-_IN_UTIL,NTPC,BAMLC0A4CBBB;BAMLH0A1HYBB,2026-10-15,86,124,172,202,235,"rating-based proxies, not traded CDS quotes (illustrative, hand-entered)",https://fred.stlouisfed.org/series/BAMLC0A4CBBB

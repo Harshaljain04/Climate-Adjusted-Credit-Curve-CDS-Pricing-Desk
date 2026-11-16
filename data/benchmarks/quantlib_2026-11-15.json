@@ -1,0 +1,210 @@
+{
+  "generatedAt": "2026-11-15",
+  "quantLibVersion": "1.44",
+  "evaluationDate": "2026-10-27",
+  "inputs": {
+    "tenorsYears": [
+      1,
+      3,
+      5,
+      7,
+      10
+    ],
+    "spreadsBp": [
+      60,
+      85,
+      110,
+      125,
+      140
+    ],
+    "riskFreeRate": 0.04,
+    "recoveryRate": 0.4,
+    "ourConventions": "Continuous r=0.04, quarterly dt=0.25 grid, half-period accrual, midpoint protection leg",
+    "qlConventions": "Actual/360 CDS helper, DateGeneration.TwentiethIMM, TARGET calendar, FlatForward Actual/365"
+  },
+  "summary": {
+    "maxAbsDiff": 0.002278,
+    "maxAbsDiffPctPoints": 0.2278,
+    "maxRelDiffPct": 0.2919,
+    "maxDiffTenorYears": 10
+  },
+  "rows": [
+    {
+      "tenorYears": 1,
+      "ourSurvivalProb": 0.990099,
+      "quantLibSurvivalProb": 0.98996,
+      "absDiff": 0.000139,
+      "relDiffPct": 0.014,
+      "parSpreadBp": 60
+    },
+    {
+      "tenorYears": 3,
+      "ourSurvivalProb": 0.958259,
+      "quantLibSurvivalProb": 0.957995,
+      "absDiff": 0.000264,
+      "relDiffPct": 0.0276,
+      "parSpreadBp": 85
+    },
+    {
+      "tenorYears": 5,
+      "ourSurvivalProb": 0.910682,
+      "quantLibSurvivalProb": 0.910315,
+      "absDiff": 0.000366,
+      "relDiffPct": 0.0402,
+      "parSpreadBp": 110
+    },
+    {
+      "tenorYears": 7,
+      "ourSurvivalProb": 0.860179,
+      "quantLibSurvivalProb": 0.859051,
+      "absDiff": 0.001127,
+      "relDiffPct": 0.1312,
+      "parSpreadBp": 125
+    },
+    {
+      "tenorYears": 10,
+      "ourSurvivalProb": 0.782895,
+      "quantLibSurvivalProb": 0.780617,
+      "absDiff": 0.002278,
+      "relDiffPct": 0.2919,
+      "parSpreadBp": 140
+    }
+  ],
+  "conventionExperiment": {
+    "baselineIsda": {
+      "label": "Actual/360 + TwentiethIMM",
+      "maxAbsDiff": 0.002278,
+      "maxRelDiffPct": 0.2919,
+      "rows": [
+        {
+          "tenorYears": 1,
+          "ourSurvivalProb": 0.990099,
+          "quantLibSurvivalProb": 0.98996,
+          "absDiff": 0.000139,
+          "relDiffPct": 0.014,
+          "parSpreadBp": 60
+        },
+        {
+          "tenorYears": 3,
+          "ourSurvivalProb": 0.958259,
+          "quantLibSurvivalProb": 0.957995,
+          "absDiff": 0.000264,
+          "relDiffPct": 0.0276,
+          "parSpreadBp": 85
+        },
+        {
+          "tenorYears": 5,
+          "ourSurvivalProb": 0.910682,
+          "quantLibSurvivalProb": 0.910315,
+          "absDiff": 0.000366,
+          "relDiffPct": 0.0402,
+          "parSpreadBp": 110
+        },
+        {
+          "tenorYears": 7,
+          "ourSurvivalProb": 0.860179,
+          "quantLibSurvivalProb": 0.859051,
+          "absDiff": 0.001127,
+          "relDiffPct": 0.1312,
+          "parSpreadBp": 125
+        },
+        {
+          "tenorYears": 10,
+          "ourSurvivalProb": 0.782895,
+          "quantLibSurvivalProb": 0.780617,
+          "absDiff": 0.002278,
+          "relDiffPct": 0.2919,
+          "parSpreadBp": 140
+        }
+      ]
+    },
+    "actual365WithImm": {
+      "label": "Actual/365 Fixed + TwentiethIMM",
+      "maxAbsDiff": 0.000817,
+      "maxRelDiffPct": 0.0896,
+      "gapReductionPct": 64.14,
+      "rows": [
+        {
+          "tenorYears": 1,
+          "ourSurvivalProb": 0.990099,
+          "quantLibSurvivalProb": 0.990097,
+          "absDiff": 2e-06,
+          "relDiffPct": 0.0002
+        },
+        {
+          "tenorYears": 3,
+          "ourSurvivalProb": 0.958259,
+          "quantLibSurvivalProb": 0.95856,
+          "absDiff": 0.000301,
+          "relDiffPct": 0.0314
+        },
+        {
+          "tenorYears": 5,
+          "ourSurvivalProb": 0.910682,
+          "quantLibSurvivalProb": 0.911499,
+          "absDiff": 0.000817,
+          "relDiffPct": 0.0896
+        },
+        {
+          "tenorYears": 7,
+          "ourSurvivalProb": 0.860179,
+          "quantLibSurvivalProb": 0.860868,
+          "absDiff": 0.000689,
+          "relDiffPct": 0.08
+        },
+        {
+          "tenorYears": 10,
+          "ourSurvivalProb": 0.782895,
+          "quantLibSurvivalProb": 0.783333,
+          "absDiff": 0.000438,
+          "relDiffPct": 0.0559
+        }
+      ]
+    },
+    "actual365WithoutImm": {
+      "label": "Actual/365 Fixed + DateGeneration.Forward (No IMM)",
+      "maxAbsDiff": 4.1e-05,
+      "maxRelDiffPct": 0.0053,
+      "gapReductionPct": 98.19,
+      "rows": [
+        {
+          "tenorYears": 1,
+          "ourSurvivalProb": 0.990099,
+          "quantLibSurvivalProb": 0.990099,
+          "absDiff": 0.0,
+          "relDiffPct": 0.0
+        },
+        {
+          "tenorYears": 3,
+          "ourSurvivalProb": 0.958259,
+          "quantLibSurvivalProb": 0.958266,
+          "absDiff": 8e-06,
+          "relDiffPct": 0.0008
+        },
+        {
+          "tenorYears": 5,
+          "ourSurvivalProb": 0.910682,
+          "quantLibSurvivalProb": 0.910698,
+          "absDiff": 1.6e-05,
+          "relDiffPct": 0.0018
+        },
+        {
+          "tenorYears": 7,
+          "ourSurvivalProb": 0.860179,
+          "quantLibSurvivalProb": 0.860211,
+          "absDiff": 3.2e-05,
+          "relDiffPct": 0.0038
+        },
+        {
+          "tenorYears": 10,
+          "ourSurvivalProb": 0.782895,
+          "quantLibSurvivalProb": 0.782936,
+          "absDiff": 4.1e-05,
+          "relDiffPct": 0.0053
+        }
+      ]
+    },
+    "fullyExplained": false,
+    "summary": "Aligning day count to Actual/365 and removing TwentiethIMM generation reduces the max survival gap from 0.00228 to 0.00004 (98.2% reduction). A residual gap of 0.00004 (0.005%) remains unexplained by these two settings alone (reflecting QuantLib's exact business-day schedule, midpoint protection evaluation, and up-front/accrual integration)."
+  }
+}

@@ -2,7 +2,5 @@
   "name": "Climate-Adjusted Credit Curve & CDS Pricing Desk",
   "description": "An institutional quant desk that bootstraps CDS hazard curves, calibrates a Merton structural model, and re-prices credit protection under NGFS climate transition scenarios.",
   "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
+  "majorCapabilities": []
 }

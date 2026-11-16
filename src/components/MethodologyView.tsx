@@ -1,418 +1,250 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useState } from 'react';
-import { BookOpen, HelpCircle, Award, Copy, Check, ExternalLink, BookmarkCheck, FileText, ChevronDown, ChevronRight } from 'lucide-react';
-import { IssuerProfile } from '../data/issuers';
-import { MertonResult, ClimateOutput } from '../lib/creditEngine';
+import { BookOpen, GraduationCap, AlertTriangle } from 'lucide-react';
 
-interface MethodologyViewProps {
-  issuer: IssuerProfile;
-  merton: MertonResult;
-  climate: ClimateOutput;
-  base5ySpreadBp: number;
-  adjusted5ySpreadBp: number;
-}
-
-export const MethodologyView: React.FC<MethodologyViewProps> = ({
-  issuer,
-  merton,
-  climate,
-  base5ySpreadBp,
-  adjusted5ySpreadBp,
-}) => {
-  const [activeSubTab, setActiveSubTab] = useState<'paper' | 'interview' | 'cv' | 'literature'>('paper');
-  const [copiedCv, setCopiedCv] = useState(false);
-  const [expandedSection, setExpandedSection] = useState<number | null>(1);
-  const [openInterviewQ, setOpenInterviewQ] = useState<number | null>(1);
-
-  const delta5yBp = (adjusted5ySpreadBp - base5ySpreadBp).toFixed(1);
-
-  // Dynamic CV Bullet
-  const cvBullet = `Built a climate-adjusted CDS pricing framework in Python (QuantLib-validated): bootstrapped piecewise hazard curves, linked NGFS carbon-price pathways to corporate balance sheets via a calibrated Merton model, and quantified a +${delta5yBp} bp 5Y spread impact (${climate.haircutPctV.toFixed(1)}% asset haircut) on ${issuer.name}; validated against Peabody Energy / PG&E historical distress and 10,000-draw Monte Carlo sensitivity analysis.`;
-
-  const handleCopyCv = () => {
-    navigator.clipboard.writeText(cvBullet);
-    setCopiedCv(true);
-    setTimeout(() => setCopiedCv(false), 2000);
-  };
-
-  const interviewQuestions = [
-    {
-      id: 1,
-      q: "Why do CDS-implied default probabilities differ from historical default frequencies?",
-      a: "CDS spreads reflect risk-neutral default probabilities (Q-measure), which price both expected default frequency and the market price of credit risk (credit risk premium, liquidity premium, jump risk, and jump-to-default volatility). Historical default frequencies (P-measure / physical probabilities) only measure realized actuarial default rates. Consequently, risk-neutral default probabilities are systematically higher than historical default rates, especially for investment-grade issuers where catastrophic tail events are rare but heavily penalized by risk-averse investors."
-    },
-    {
-      id: 2,
-      q: "Walk me through bootstrapping a piecewise-constant hazard rate curve.",
-      a: "We start from market proxy par spreads at tenors T = [1, 3, 5, 7, 10] years. For each tenor T_k, we fix previously calibrated hazard rates lambda_1 ... lambda_{k-1} on prior intervals and solve for the unknown constant hazard rate lambda_k on (T_{k-1}, T_k] such that the model par spread equals the market proxy. The model par spread is the ratio of the Protection Leg to RPV01. We evaluate both legs on a quarterly grid (dt = 0.25), applying continuous discount factors D(t) = exp(-r*t) and accounting for default accrual via the half-period approximation (0.5 * dt * D(t_i) * [Q(t_{i-1}) - Q(t_i)]). We use a 1D Brent root solver to guarantee round-trip repricing error below 1e-8."
-    },
-    {
-      id: 3,
-      q: "Why does the Merton model under-predict short-maturity spreads, and how did you handle it?",
-      a: "Under Merton (1974), firm asset value follows a continuous geometric Brownian motion with no jumps. If asset value V exceeds face value of debt D today, the probability of continuous diffusion crossing the default barrier in the next few weeks or months is virtually zero (lim_{T -> 0} Spread = 0). Real markets exhibit positive short-dated spreads due to jump-to-default risk, liquidity friction, and imperfect accounting disclosure. In our desk, we handle this through the kappa calibration scaling factor: kappa = Proxy_5Y / Merton_5Y. We use Merton to capture the structural elasticity of debt to the climate PV haircut, and scale the delta by kappa into empirical market spread space."
-    },
-    {
-      id: 4,
-      q: "How did you convert an NGFS carbon price into a change in asset value, and what drives the answer most?",
-      a: "We compute annual unpassable carbon costs: AnnualCost_t = (1 - p) * (Scope 1 + Scope 2) * EmissionsIndex_t * CarbonPrice_t * (1 - TaxRate). We discount these future outflows over a 25-year horizon at the firm's WACC to compute a DCF present value haircut. The post-shock asset value is V_scenario = max(V - Haircut, 1.01 * D). Our Tornado sensitivity analysis proves that Cost Pass-Through (p) and WACC are the dominant drivers: if an energy firm can pass through 80% of costs to consumers, its spread shock is muted, whereas 0% pass-through leads to severe balance sheet impairment."
-    },
-    {
-      id: 5,
-      q: "How do you know your climate numbers are meaningful with no ground truth?",
-      a: "Because climate transition pathways are forward-looking policy scenarios, empirical forward ground truth does not exist. We establish validity through four pillars: (1) Numerical verification against QuantLib (sub-0.03% difference); (2) Theoretical monotonicity and sector-ordering checks (severe scenarios > mild; high-emitting utilities and cement > low-carbon tech and pharma); (3) Historical analogue validation showing that structural Distance-to-Default collapsed prior to the Peabody Energy (2016) and PG&E (2019) bankruptcies; and (4) Literature plausibility alignment with Bolton & Kacperczyk (2021) and Seltzer et al. (2022)."
-    },
-    {
-      id: 6,
-      q: "What would you change with access to real CDS data?",
-      a: "With proprietary Markit/Bloomberg single-name CDS and OIS discount curves: (1) I would replace rating-proxy spreads with actual traded bid/ask CDS quotes and credit curve term structures; (2) Implement exact ISDA Standard Model conventions (rolling IMM dates, Actual/360 day count, cash settlement); (3) Fit issuer-specific corporate abatement cost curves rather than uniform NGFS macro paths; and (4) Incorporate Scope 3 upstream/downstream emissions data and physical asset geospatial risk."
-    }
-  ];
-
-  const methodologySections = [
-    {
-      id: 1,
-      title: "1. Motivation & Problem Statement",
-      content: `Global central banks and the Network for Greening the Financial System (NGFS) emphasize scenario analysis to test financial stability against carbon transition shocks. While credit markets price default probability through single-name Credit Default Swaps (CDS), standard academic and student research rarely connects integrated assessment climate models directly to corporate credit curves with quantitative transparency. This project constructs an end-to-end quantitative framework linking NGFS carbon prices and emissions trajectories to corporate balance sheets via a calibrated Merton (1974) structural model, repricing CDS spreads, survival probabilities, and spread sensitivities (Climate CS01).`
-    },
-    {
-      id: 2,
-      title: "2. Data Lineage & Non-Negotiable Proxy Disclosure",
-      content: `In accordance with professional quant standards and data licensing integrity:
-- Traded single-name CDS dealer quotes (e.g., Markit, Bloomberg) are proprietary and inaccessible in open research, and Indian domestic single-name CDS is illiquid.
-- All market spreads in this framework are explicitly documented as CDS-equivalent spreads calibrated to rating-based proxies using the FRED ICE BofA Option-Adjusted Spread (OAS) series (BAMLC0A1CAAA, BAMLC0A4CBBB, BAMLH0A1HYBB) and Aswath Damodaran's NYU Stern default-spread matrices.
-- Corporate balance sheet liabilities D and equity market capitalization E are extracted from SEC EDGAR (10-K filings) and SEBI BRSR reports for Indian issuers.
-- GHG Scope 1 and Scope 2 emissions disclosures are sourced from official corporate sustainability reports and CDP filings.`
-    },
-    {
-      id: 3,
-      title: "3. Baseline Credit Curve & Hazard Rate Bootstrapping",
-      content: `We model default times via an inhomogeneous Poisson process with piecewise-constant hazard rates lambda_k over tenors T = [1, 3, 5, 7, 10] years.
-Survival Probability: Q(t) = exp(-integral_0^t lambda(s) ds) = exp(-sum_{j=1}^{k-1} lambda_j (T_j - T_{j-1}) - lambda_k (t - T_{k-1}))
-Protection Leg PV: ProtLeg = (1 - R) * sum_i D(t_mid) * [Q(t_{i-1}) - Q(t_i)]
-RPV01 (Premium Leg for unit spread): RPV01 = sum_i [ D(t_i) * dt * Q(t_i) + 0.5 * dt * D(t_i) * (Q(t_{i-1}) - Q(t_i)) ]
-Par Spread: s(T_k) = ProtLeg(T_k) / RPV01(T_k)
-Bootstrapping sequentially solves for lambda_k using SciPy Brent root-finding, guaranteeing round-trip repricing error < 1e-8.`
-    },
-    {
-      id: 4,
-      title: "4. Merton (1974) Structural Calibration & Short-End Bias",
-      content: `To translate physical carbon costs into credit spread shifts, we calibrate the Merton (1974) model:
-Equity E is a European call on firm assets V struck at book debt D:
-E = V * N(d_1) - D * exp(-r*T) * N(d_2)
-sigma_E * E = N(d_1) * sigma_V * V
-We solve for unobserved asset value V and asset volatility sigma_V.
-Merton credit spread: s_Merton = -(1/T) * ln[ N(d_2) + (V / (D * exp(-r*T))) * N(-d1) ]
-Because continuous Brownian motion lacks jump risk, Merton systematically under-predicts short-dated spreads (lim_{T -> 0} Spread = 0). We bridge this via the calibration factor:
-kappa = s_{proxy, 5Y} / s_{Merton, 5Y}
-This preserves structural elasticity while ensuring empirical pricing levels.`
-    },
-    {
-      id: 5,
-      title: "5. NGFS Climate Scenario Overlay & DCF Haircut",
-      content: `For each NGFS Phase IV scenario (Net Zero 2050, Delayed Transition, Current Policies), we obtain annual carbon prices ($/tCO2) and emissions reduction indices (E_t / E_0) from 2025 to 2050.
-Annual Post-Pass-Through Cash Outflow:
-AnnualCost_t = (1 - p) * (Scope 1 + Scope 2) * EmissionsIndex_t * CarbonPrice_t * (1 - TaxRate)
-PV Asset Haircut: Haircut = sum_{t=1}^H AnnualCost_t / (1 + WACC)^t + Optional Terminal Value
-Shocked Assets: V_scenario = max(V - Haircut, 1.01 * D)
-Merton spread delta: Delta s_Merton = s_Merton(V_scenario) - s_Merton(V)
-Adjusted Market Spreads: s_adj(T_k) = s_base(T_k) + kappa * Delta s_Merton
-We re-bootstrap the hazard curve to obtain adjusted survival probabilities and compute MTM impact on EUR 10M protection.`
-    },
-    {
-      id: 6,
-      title: "6. Empirical Results & Sector Monotonicity",
-      content: `The model exhibits strict economic monotonicity across scenarios and sectors:
-1. Scenario Ordering: Delayed Transition (disorderly late carbon spike) and Net Zero 2050 produce spread widenings of +15 to +65 bp for carbon-intensive issuers, while Current Policies produces sub-3 bp transition impacts.
-2. Sector Ordering: Thermal power (NTPC) and cement (Holcim) experience the highest asset haircuts (8% to 18% of V) and spread widening (+35 to +68 bp). In contrast, low-carbon comparators (Microsoft, Pfizer, SAP) show negligible haircuts (<0.05% of V) and sub-1 bp spread changes.`
-    },
-    {
-      id: 7,
-      title: "7. Validation Framework",
-      content: `Validation is executed across four independent checks:
-A. Numerical Accuracy: Unit test suite passes with round-trip error < 1e-8; piecewise hazard curve agrees with QuantLib Python API within 0.027% (differences explained by Actual/360 vs continuous dt).
-B. Cross-Sectional OLS Regression: ln(Proxy 5Y) ~ ln(Merton 5Y) yields high Spearman rank correlation (>0.85), proving Merton distance-to-default accurately ranks relative issuer risk.
-C. Historical Distress Event Studies: Reconstructed Distance-to-Default paths for Peabody Energy (2016 Chapter 11) and PG&E (2019 Chapter 11) show DD deteriorating monotonically 2+ years before filing.
-D. Parameter Sensitivity & Monte Carlo: 10,000 draws establish confidence intervals (P5, Median, P95) rather than relying on a single deterministic point forecast.`
-    },
-    {
-      id: 8,
-      title: "8. Modeling Limitations",
-      content: `Key academic limitations must be stated openly:
-- Horizon Mismatch: CDS contracts mature at 1 to 10 years, whereas climate transition costs run over 25+ years (2025-2050). Incorporating long-run costs into 5Y CDS assumes forward-looking debt repricing.
-- Constant Debt Barrier: Merton assumes a single maturity of zero-coupon debt; real firms actively refinance and adjust capital structure.
-- Scope 3 Omission: Hand-collected Scope 1 and 2 emissions capture direct combustion and electricity, but exclude supply-chain emissions.
-- Macro NGFS Pathways: Uniform regional carbon prices do not reflect firm-specific decarbonization CAPEX or patent advantages.`
-    },
-    {
-      id: 9,
-      title: "9. Extension Roadmap",
-      content: `Future research extensions after v1:
-1. Physical Climate Risk Channel: Integrate NGFS/Climate Analytics acute flood/wildfire damage functions into capital depreciation.
-2. Geospatial Scope 3 Abatement: Incorporate marginal abatement cost (MAC) curves and supplier emissions.
-3. Stochastic Hazard & Jump-to-Default: Replace piecewise-constant intensity with jump-diffusion hazard models.
-4. OIS Discounting: Bootstrap dual ESTR/SOFR discounting curves.`
-    },
-    {
-      id: 10,
-      title: "10. Data Governance & AI-Assisted Disclosure",
-      content: `All data sources are logged in SOURCES.md with dates and terms of use. No data was hallucinated from model weights. AI assistance was utilized for boilerplate scaffolding, test specification, and LaTeX structuring, with 100% of numerical derivations, formulas, and code verified through independent unit tests.`
-    }
-  ];
+export const MethodologyView: React.FC = () => {
+  const [activeSubTab, setActiveSubTab] = useState<'paper' | 'literature'>('paper');
 
   return (
     <div className="space-y-6">
-      
-      {/* Sub-tab Navigation */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-[#0F1626] border border-slate-800 p-2 rounded-xl">
-        <div className="flex items-center gap-1.5 overflow-x-auto">
+      {/* Sub-navigation */}
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900/90 border border-slate-800/80 rounded-xl p-4 shadow-lg">
+        <div>
+          <h2 className="text-sm font-bold text-white flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-emerald-400" />
+            Quantitative Methodology, Literature &amp; Structural Assumptions
+          </h2>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Mathematical specification of the ISDA CDS hazard bootstrap, Merton (1974) / CreditGrades (2002) structural bridge, and NGFS Phase IV transition overlay
+          </p>
+        </div>
+        <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-lg border border-slate-800">
           <button
             onClick={() => setActiveSubTab('paper')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
               activeSubTab === 'paper'
-                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
-            <BookOpen className="w-3.5 h-3.5 inline mr-1.5" />
-            Methodology Note (10 Sections)
-          </button>
-          <button
-            onClick={() => setActiveSubTab('interview')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
-              activeSubTab === 'interview'
-                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-            }`}
-          >
-            <HelpCircle className="w-3.5 h-3.5 inline mr-1.5" />
-            Interview Q&amp;A Trainer
-          </button>
-          <button
-            onClick={() => setActiveSubTab('cv')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
-              activeSubTab === 'cv'
-                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-            }`}
-          >
-            <Award className="w-3.5 h-3.5 inline mr-1.5" />
-            CV Bullet Generator
+            <BookOpen className="w-3.5 h-3.5" />
+            Methodology Paper
           </button>
           <button
             onClick={() => setActiveSubTab('literature')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
               activeSubTab === 'literature'
                 ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
-            <BookmarkCheck className="w-3.5 h-3.5 inline mr-1.5" />
-            Literature Plausibility
+            <GraduationCap className="w-3.5 h-3.5" />
+            Literature &amp; Assumptions
           </button>
         </div>
-
-        <span className="text-[11px] text-slate-400 font-mono hidden md:inline">
-          Quant Portfolio Showcase
-        </span>
       </div>
 
-      {/* 1. Methodology Paper View */}
+      {/* Sub-Tab 1: Methodology Paper */}
       {activeSubTab === 'paper' && (
-        <div className="bg-[#0F1626] border border-slate-800 rounded-xl p-6 space-y-4">
-          <div className="border-b border-slate-800 pb-4">
-            <span className="text-xs font-mono text-cyan-400 uppercase tracking-wider block mb-1">
-              Academic Working Paper &amp; Technical Documentation
-            </span>
-            <h2 className="text-lg font-bold text-white tracking-tight">
-              Climate-Adjusted Credit Curve &amp; CDS Pricing Desk: A Structural Framework for Transition Risk
-            </h2>
-            <p className="text-xs text-slate-400 mt-1">
-              Author: Harshal Jain · Prepared for GrEnFIn (Climate &amp; Business) Application Portfolio · October 2026
-            </p>
-          </div>
-
-          {/* Accordion / Expanded Sections */}
-          <div className="space-y-3 pt-2">
-            {methodologySections.map((sec) => {
-              const isExpanded = expandedSection === sec.id;
-              return (
-                <div
-                  key={sec.id}
-                  className="border border-slate-800 rounded-lg overflow-hidden bg-slate-900/40"
-                >
-                  <button
-                    onClick={() => setExpandedSection(isExpanded ? null : sec.id)}
-                    className="w-full px-4 py-3 text-left flex items-center justify-between text-xs font-semibold text-white hover:bg-slate-800/50 transition-colors"
-                  >
-                    <span>{sec.title}</span>
-                    {isExpanded ? <ChevronDown className="w-4 h-4 text-cyan-400" /> : <ChevronRight className="w-4 h-4 text-slate-400" />}
-                  </button>
-
-                  {isExpanded && (
-                    <div className="px-4 pb-4 pt-1 text-xs text-slate-300 leading-relaxed border-t border-slate-800/80 whitespace-pre-line font-sans">
-                      {sec.content}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* 2. Interview Prep Trainer */}
-      {activeSubTab === 'interview' && (
-        <div className="bg-[#0F1626] border border-slate-800 rounded-xl p-6 space-y-4">
-          <div>
-            <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
-              <HelpCircle className="w-4 h-4 text-cyan-400" />
-              Quantitative Interview Q&amp;A Trainer
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Card 1: Reduced-Form CDS Bootstrap */}
+          <div className="bg-slate-900/90 border border-slate-800/80 rounded-xl p-6 shadow-lg">
+            <div className="text-xs font-mono text-emerald-400 uppercase tracking-wider mb-1">
+              Module 01 • Reduced-Form Credit Curve
+            </div>
+            <h3 className="text-base font-bold text-white mb-3">
+              ISDA Piecewise-Constant Hazard Rate Bootstrap
             </h3>
-            <p className="text-[11px] text-slate-400 mt-0.5">
-              Targeted interview answers for GrEnFIn scholarship panels, credit risk desks, and investment banking M&amp;A interviews
+            <p className="text-xs text-slate-300 leading-relaxed mb-4">
+              Following <strong>O&apos;Kane &amp; Turnbull (2003)</strong> and the ISDA Standard CDS Model, default time <span className="font-mono">τ</span> is modelled as the first arrival of an inhomogeneous Poisson process with deterministic piecewise-constant hazard intensity <span className="font-mono">λ(t) = λ_k</span> on tenor intervals <span className="font-mono">[T_&#123;k-1&#125;, T_k]</span> for <span className="font-mono">T ∈ &#123;1, 3, 5, 7, 10&#125;</span> years.
+            </p>
+            <div className="bg-slate-950/90 border border-slate-800 rounded-lg p-3.5 font-mono text-xs text-slate-200 space-y-2 mb-4">
+              <div className="text-slate-400 text-[10px]">// Cumulative Survival Probability</div>
+              <div>Q(t) = exp( -∫_0^t λ(u) du )</div>
+              <div className="text-slate-400 text-[10px] pt-1">// Premium Leg Risky PV01 (with Half-Period Accrual on Default)</div>
+              <div>RPV01(T) = Σ_j Δ_j · P(0, t_j) · [ Q(t_j) + 0.5 · (Q(t_&#123;j-1&#125;) - Q(t_j)) ]</div>
+              <div className="text-slate-400 text-[10px] pt-1">// Protection Leg PV (Midpoint Integration, N=24 steps/yr)</div>
+              <div>V_prot(T) = (1 - R) · Σ_m P(0, t_m*) · [ Q(t_&#123;m-1&#125;) - Q(t_m) ]</div>
+            </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Sequential root-finding via <strong>Brent&apos;s method</strong> (<span className="font-mono">tol = 1e-12</span>) calibrates each <span className="font-mono">λ_k</span> sequentially so that <span className="font-mono">s_par(T_k) = V_prot(T_k) / RPV01(T_k)</span> matches the input par spread to machine precision (<span className="font-mono">&lt; 10^-8 bp</span>).
             </p>
           </div>
 
-          <div className="space-y-3 pt-2">
-            {interviewQuestions.map((item) => {
-              const isOpen = openInterviewQ === item.id;
-              return (
-                <div key={item.id} className="border border-slate-800 rounded-lg overflow-hidden bg-slate-900/60">
-                  <button
-                    onClick={() => setOpenInterviewQ(isOpen ? null : item.id)}
-                    className="w-full px-4 py-3 text-left flex items-start justify-between gap-3 text-xs font-semibold text-slate-200 hover:bg-slate-800/60 transition-colors"
-                  >
-                    <span className="flex items-start gap-2">
-                      <span className="text-cyan-400 font-mono shrink-0">Q{item.id}.</span>
-                      <span className="text-white">{item.q}</span>
-                    </span>
-                    {isOpen ? <ChevronDown className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" /> : <ChevronRight className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />}
-                  </button>
-
-                  {isOpen && (
-                    <div className="px-4 pb-4 pt-2 border-t border-slate-800/80 text-xs text-slate-300 leading-relaxed bg-[#0A0F1C]">
-                      <div className="text-[11px] text-cyan-400 font-mono font-medium mb-1">
-                        Ideal Quant Answer:
-                      </div>
-                      <p>{item.a}</p>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* 3. CV Bullet Generator */}
-      {activeSubTab === 'cv' && (
-        <div className="bg-[#0F1626] border border-slate-800 rounded-xl p-6 space-y-4">
-          <div>
-            <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
-              <Award className="w-4 h-4 text-cyan-400" />
-              Dynamic CV Bullet Generator
+          {/* Card 2: Merton (1974) & CreditGrades (2002) Structural Models */}
+          <div className="bg-slate-900/90 border border-slate-800/80 rounded-xl p-6 shadow-lg">
+            <div className="text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1">
+              Module 02 • Structural &amp; First-Passage Balance Sheet Models
+            </div>
+            <h3 className="text-base font-bold text-white mb-3">
+              Merton (1974) Calibration &amp; CreditGrades (2002) Barrier Uncertainty
             </h3>
-            <p className="text-[11px] text-slate-400 mt-0.5">
-              Resume bullet populated with live quantitative findings for Harshal Jain&apos;s portfolio
+            <p className="text-xs text-slate-300 leading-relaxed mb-4">
+              In <strong>Merton (1974)</strong>, firm equity <span className="font-mono">E</span> is a European call option on unobservable firm assets <span className="font-mono">V</span> with strike equal to book debt <span className="font-mono">D</span> at horizon <span className="font-mono">T = 5Y</span>. Because pure Gaussian diffusion produces near-zero spreads for low-leverage issuers (the structural credit spread puzzle), we pair Merton with the <strong>CreditGrades (2002)</strong> first-passage model with a random default barrier <span className="font-mono">L · D</span> (<span className="font-mono">L̄ = 0.5, λ = 0.3</span>):
+            </p>
+            <div className="bg-slate-950/90 border border-slate-800 rounded-lg p-3.5 font-mono text-xs text-slate-200 space-y-2 mb-4">
+              <div className="text-slate-400 text-[10px]">// Coupled Merton Calibration System (Solved via Nested Brent&apos;s Method)</div>
+              <div>f_1(V, σ_V) = V · N(d_1) - D · e^(-rT) · N(d_2) - E = 0</div>
+              <div>f_2(V, σ_V) = N(d_1) · σ_V · V - σ_E · E = 0</div>
+              <div className="text-slate-400 text-[10px] pt-1">// CreditGrades (2002) Survival Probability with Barrier Uncertainty λ = 0.3</div>
+              <div>d = ((E + L̄·D) / (L̄·D)) · exp(λ²),   A_t = √(σ_V² · t + λ²)</div>
+              <div>P(t) = Φ(-A_t/2 + ln(d)/A_t) - d · Φ(-A_t/2 - ln(d)/A_t)</div>
+            </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              We report the raw unclipped <span className="font-mono">κ = s_proxy(5Y) / s_Merton(5Y)</span> ratio honestly (with no <span className="font-mono">[0.2, 12.0]</span> clip or <span className="font-mono">1.0</span> fallback) and compute the structural spread shift via CreditGrades (2002) where the climate haircut reduces equity <span className="font-mono">E&apos; = max(E - PV_Carbon, $1M)</span>.
             </p>
           </div>
 
-          <div className="p-4 rounded-lg bg-slate-900 border border-slate-800 relative">
-            <p className="text-xs text-slate-200 leading-relaxed font-sans pr-10">
-              {cvBullet}
+          {/* Card 3: NGFS Phase IV Carbon Haircut & Tenor-Dependent Ramp */}
+          <div className="bg-slate-900/90 border border-slate-800/80 rounded-xl p-6 shadow-lg">
+            <div className="text-xs font-mono text-amber-400 uppercase tracking-wider mb-1">
+              Module 03 • Climate Transition Transmission Channel
+            </div>
+            <h3 className="text-base font-bold text-white mb-3">
+              NGFS Phase IV Carbon DCF &amp; Logistic Tenor Ramp g(T)
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed mb-4">
+              Under NGFS Phase IV pathways (<em>Net Zero 2050</em>, <em>Delayed Transition</em>, <em>Current Policies</em>), unhedged Scope 1 + Scope 2 (and optional Scope 3) carbon costs erode firm asset value via discounted after-tax cash outflows. Following <strong>Kenyon</strong> and <strong>Forvis Mazars (2023)</strong> on climate CVA hazard-curve stress, we apply a logistic tenor weight <span className="font-mono">g(T)</span> normalised to <span className="font-mono">g(10) = 1</span> so long tenors bear the transition shock while the 1Y tenor moves by &lt;15% of the 10Y shift:
             </p>
-            <button
-              onClick={handleCopyCv}
-              className="absolute top-3 right-3 p-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-              title="Copy CV bullet"
-            >
-              {copiedCv ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-            </button>
+            <div className="bg-slate-950/90 border border-slate-800 rounded-lg p-3.5 font-mono text-xs text-slate-200 space-y-2 mb-4">
+              <div className="text-slate-400 text-[10px]">// Net Present Value of Carbon Transition Burden</div>
+              <div>PV_Carbon = Σ_&#123;t=1&#125;^H [ (1 - α_pass) · E_t · P_carbon(t) · (1 - τ) ] / (1 + WACC)^t</div>
+              <div className="text-slate-400 text-[10px] pt-1">// Logistic Tenor Weight g(T) Normalised so g(10) = 1 (Default m = 7Y, w = 2Y)</div>
+              <div>g_raw(T) = 1 / (1 + exp(-(T - m) / w)),   g(T) = g_raw(T) / g_raw(10)</div>
+              <div>s_adj(T) = s_base(T) + Δs_CG(10Y) · g(T)</div>
+            </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              When <span className="font-mono">V - PV_Carbon &le; D</span>, the engine flags <span className="font-mono">insolvent_in_scenario</span> and outputs <span className="font-mono">n/a (insolvent in scenario)</span> rather than displaying thousands-of-bp extrapolation as a tradeable price.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-2">
-            <div className="p-3 bg-slate-900/60 rounded border border-slate-800">
-              <span className="text-slate-400 text-[10px] block">Current Tested Issuer</span>
-              <span className="font-semibold text-white font-mono">{issuer.name} ({issuer.ticker})</span>
+          {/* Card 4: Empirical Validation & Seeded Uncertainty */}
+          <div className="bg-slate-900/90 border border-slate-800/80 rounded-xl p-6 shadow-lg">
+            <div className="text-xs font-mono text-purple-400 uppercase tracking-wider mb-1">
+              Module 04 • Empirical Validation &amp; Reproducible Uncertainty
             </div>
-            <div className="p-3 bg-slate-900/60 rounded border border-slate-800">
-              <span className="text-slate-400 text-[10px] block">5Y Spread Delta</span>
-              <span className="font-semibold text-amber-300 font-mono">+{delta5yBp} bp</span>
-            </div>
-            <div className="p-3 bg-slate-900/60 rounded border border-slate-800">
-              <span className="text-slate-400 text-[10px] block">Asset Haircut Ratio</span>
-              <span className="font-semibold text-rose-400 font-mono">{climate.haircutPctV.toFixed(2)}% of V</span>
-            </div>
+            <h3 className="text-base font-bold text-white mb-3">
+              QuantLib Benchmarking, Unfloored Regression &amp; Seeded Monte Carlo
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed mb-4">
+              To ensure institutional transparency and reproducibility, every validation output is computed dynamically or loaded from a committed verification artifact:
+            </p>
+            <ul className="space-y-2 text-xs text-slate-300">
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-400 font-bold">1.</span>
+                <span>
+                  <strong>QuantLib 1.44 Benchmark (<span className="font-mono">data/validation/quantlib_2026-11-15.json</span>):</strong> Reports the true 10Y survival gap (<span className="font-mono">0.228 pp / 0.292% rel</span>) and proves via a convention isolation check that <span className="font-mono">98.2%</span> of the difference is explained by ISDA <span className="font-mono">Actual/360 + TwentiethIMM</span> vs. continuous time.
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-400 font-bold">2.</span>
+                <span>
+                  <strong>Unfloored Cross-Sectional Check (<span className="font-mono">N=9</span>):</strong> Regresses <span className="font-mono">ln(model)</span> on <span className="font-mono">ln(proxy)</span> without artificial <span className="font-mono">1 bp</span> flooring, handles rank ties via average ranks (<span className="font-mono">scipy.stats.spearmanr</span>), and evaluates DD vs. proxy spread rank correlation (<span className="font-mono">ρ = -0.9000</span>).
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-400 font-bold">3.</span>
+                <span>
+                  <strong>Seeded Mulberry32 Monte Carlo (<span className="font-mono">N=2,000</span> draws):</strong> Jointly samples cashflow parameters, senior recovery <span className="font-mono">R</span>, CreditGrades barrier parameters (<span className="font-mono">L̄, λ</span>), and ramp parameters (<span className="font-mono">m, w</span>).
+                </span>
+              </li>
+            </ul>
           </div>
-
-          <p className="text-[11px] text-slate-400">
-            Tip: Switch issuers in the header dropdown to dynamically refresh the CV bullet with different corporate metrics.
-          </p>
         </div>
       )}
 
-      {/* 4. Literature Plausibility */}
+      {/* Sub-Tab 2: Academic Literature & Structural Assumptions */}
       {activeSubTab === 'literature' && (
-        <div className="bg-[#0F1626] border border-slate-800 rounded-xl p-6 space-y-4">
-          <div>
-            <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
-              <BookmarkCheck className="w-4 h-4 text-cyan-400" />
-              Academic Literature Benchmarking &amp; Plausibility Checks
-            </h3>
-            <p className="text-[11px] text-slate-400 mt-0.5">
-              Empirical grounding of carbon risk premia and regulatory credit shocks against peer-reviewed finance literature
-            </p>
-          </div>
-
-          <div className="space-y-4 pt-2 text-xs">
-            
-            {/* Paper 1: Bolton & Kacperczyk */}
-            <div className="p-4 bg-slate-900/80 rounded-lg border border-slate-800 space-y-1.5">
-              <div className="flex justify-between items-start">
-                <span className="font-bold text-white text-sm">
-                  Bolton, P., &amp; Kacperczyk, M. (2021). &ldquo;Do Investors Care About Carbon Risk?&rdquo;
-                </span>
-                <span className="text-[11px] font-mono text-cyan-400">Journal of Finance</span>
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-slate-900/90 border border-slate-800/80 rounded-xl p-6 shadow-lg">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-400 mb-4">
+                Foundational Academic &amp; Practitioner References
+              </h3>
+              <div className="space-y-4 text-xs">
+                <div className="pb-3 border-b border-slate-800">
+                  <div className="font-bold text-white">
+                    O&apos;Kane, D., &amp; Turnbull, S. (2003) — Valuation of Credit Default Swaps
+                  </div>
+                  <div className="text-slate-400 mt-1">
+                    <em>Lehman Brothers Fixed Income Quantitative Credit Research.</em> Standard reference for piecewise-constant hazard rate bootstrapping, premium leg risky annuity (RPV01) with accrual-on-default, and protection leg present value.
+                  </div>
+                </div>
+                <div className="pb-3 border-b border-slate-800">
+                  <div className="font-bold text-white">
+                    Merton, R. C. (1974) — On the Pricing of Corporate Debt: The Risk Structure of Interest Rates
+                  </div>
+                  <div className="text-slate-400 mt-1">
+                    <em>Journal of Finance, 29(2), 449–470.</em> Establishes the structural contingent-claims framework treating corporate equity as a European call option on firm assets.
+                  </div>
+                </div>
+                <div className="pb-3 border-b border-slate-800">
+                  <div className="font-bold text-white">
+                    Finkelstein, V., Lardy, J.-P., Pan, G., Ta, T., &amp; Tierney, J. (2002) — CreditGrades Technical Document
+                  </div>
+                  <div className="text-slate-400 mt-1">
+                    <em>RiskMetrics Group / J.P. Morgan, Goldman Sachs &amp; Deutsche Bank.</em> Introduces a first-passage structural model with lognormal default barrier uncertainty (<span className="font-mono">L̄ = 0.5, λ = 0.3</span>), preventing short-dated and low-leverage credit spreads from collapsing to zero.
+                  </div>
+                </div>
+                <div className="pb-3 border-b border-slate-800">
+                  <div className="font-bold text-white">
+                    Vozian, K., &amp; Costola, M. (2025) — Pricing Climate Transition Risk: Evidence from European Corporate CDS
+                  </div>
+                  <div className="text-slate-400 mt-1">
+                    <em>Energy Economics.</em> Provides empirical estimates of transition-risk effects in traded European corporate CDS spreads (5–150 bp across carbon-intensive buckets), anchoring our empirical plausibility threshold.
+                  </div>
+                </div>
+                <div>
+                  <div className="font-bold text-white">
+                    Kenyon, C. / Forvis Mazars (2023) &amp; Livieri, Radi &amp; Smaniotto (2023)
+                  </div>
+                  <div className="text-slate-400 mt-1">
+                    <em>Climate CVA Hazard-Curve Stress &amp; Jump-Diffusion Credit Risk (arXiv:2303.12483).</em> Establishes logistic midpoint/width hazard-curve ramps for long-dated climate transition horizons and jump-diffusion extensions.
+                  </div>
+                </div>
               </div>
-              <p className="text-slate-300 text-[11px] leading-relaxed">
-                Empirical benchmark: Demonstrates a significant carbon premium across US equities and bonds. Firms with higher Scope 1 and Scope 2 emissions earn higher expected returns and face wider credit spreads. Our modeled spread delta of +15 to +60 bp for high-intensity energy and utilities aligns with Bolton &amp; Kacperczyk&apos;s estimated carbon risk premium cross-section.
-              </p>
             </div>
 
-            {/* Paper 2: Seltzer, Starks, & Zhu */}
-            <div className="p-4 bg-slate-900/80 rounded-lg border border-slate-800 space-y-1.5">
-              <div className="flex justify-between items-start">
-                <span className="font-bold text-white text-sm">
-                  Seltzer, L., Starks, L., &amp; Zhu, Q. (2022). &ldquo;Climate Regulatory Risk and Corporate Bonds&rdquo;
-                </span>
-                <span className="text-[11px] font-mono text-cyan-400">NBER / Review of Financial Studies</span>
+            <div className="bg-slate-900/90 border border-slate-800/80 rounded-xl p-6 shadow-lg">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-amber-400 mb-4 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-400" />
+                In-App Assumptions &amp; Model Limitations
+              </h3>
+              <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
+                <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800">
+                  <span className="font-bold text-white block mb-0.5">
+                    1. Horizon Mismatch (1–10Y CDS vs. 25Y Transition DCF)
+                  </span>
+                  NGFS carbon price paths run through 2050, whereas liquid CDS contracts trade out to 10Y. Discounting 25 years of future carbon outflows into t=0 firm equity and distributing the spread shift via a logistic ramp g(T) is a scenario stress approximation, not an arbitrage-free multi-period equilibrium.
+                </div>
+                <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800">
+                  <span className="font-bold text-white block mb-0.5">
+                    2. Scope 3 Emissions Excluded by Default
+                  </span>
+                  Baseline calculations include Scope 1 and Scope 2 emissions only. For upstream/integrated oil &amp; gas issuers (XOM, TTE), Scope 1+2 understates total value-chain transition exposure; an optional Scope 3 toggle is provided on the Pricing Desk tab.
+                </div>
+                <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800">
+                  <span className="font-bold text-white block mb-0.5">
+                    3. Single Bullet Debt Structure &amp; Constant Recovery
+                  </span>
+                  The structural engine aggregates all short- and long-term debt into a single barrier D with constant recovery R (40% baseline) rather than modelling individual bond maturities, covenants, or stochastic recovery-at-default.
+                </div>
+                <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800">
+                  <span className="font-bold text-white block mb-0.5">
+                    4. Shadow Carbon Prices vs. Enacted Cash Taxes
+                  </span>
+                  NGFS carbon prices represent shadow marginal abatement costs. Treating them as direct unhedged cash outflows (after pass-through and tax shield) without endogenous capex abatement overstates solvency erosion for firms that can profitably decarbonise.
+                </div>
+                <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800">
+                  <span className="font-bold text-white block mb-0.5">
+                    5. Continuous Asset Diffusion (No Poisson Jumps) &amp; Rating Proxy Spreads
+                  </span>
+                  Asset values follow continuous diffusion without Poisson jumps, and baseline spreads are rating-based proxies (<span className="font-mono">data/raw/proxy_spreads.csv</span>), not live dealer CDS quotes.
+                </div>
               </div>
-              <p className="text-slate-300 text-[11px] leading-relaxed">
-                Empirical benchmark: Investigates corporate bond yield spreads around Paris Agreement regulatory developments. Firms in carbon-intensive industries experienced an immediate 20 to 45 bp widening in secondary market credit spreads. Our Merton-scaled climate deltas directly reflect this magnitude.
-              </p>
             </div>
-
-            {/* Paper 3: Battiston et al. */}
-            <div className="p-4 bg-slate-900/80 rounded-lg border border-slate-800 space-y-1.5">
-              <div className="flex justify-between items-start">
-                <span className="font-bold text-white text-sm">
-                  Battiston, S., Mandel, A., Monasterolo, I., et al. (2017). &ldquo;A Climate Stress-Test of the Financial System&rdquo;
-                </span>
-                <span className="text-[11px] font-mono text-cyan-400">Nature Climate Change</span>
-              </div>
-              <p className="text-slate-300 text-[11px] leading-relaxed">
-                Methodological benchmark: Pioneer in applying macro-financial balance sheet haircuts to evaluate systemic transition risk across fossil fuel and power generation sectors. Our DCF haircut formulation mirrors Battiston&apos;s transmission mechanism.
-              </p>
-            </div>
-
           </div>
         </div>
       )}
-
     </div>
   );
 };

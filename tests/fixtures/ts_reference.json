@@ -1,0 +1,1584 @@
+{
+  "generatedAt": "2026-11-15",
+  "params": {
+    "passThrough": 0.4,
+    "wacc": 0.08,
+    "taxRate": 0.25,
+    "horizonYears": 25,
+    "includeTerminalValue": false,
+    "terminalGrowthRate": 0.015,
+    "volUpliftFactor": 0.5,
+    "rampMidpointYears": 7,
+    "rampWidthYears": 2
+  },
+  "scenarios": {
+    "net_zero_2050": {
+      "id": "net_zero_2050",
+      "name": "Net Zero 2050 (Orderly)",
+      "carbonPrices": [
+        35,
+        42,
+        50,
+        60,
+        72,
+        85,
+        100,
+        116,
+        134,
+        152,
+        170,
+        186,
+        202,
+        216,
+        230,
+        242,
+        252,
+        260,
+        268,
+        274,
+        278,
+        282,
+        285,
+        288,
+        290,
+        292
+      ],
+      "emissionsIndex": [
+        1,
+        0.96,
+        0.92,
+        0.88,
+        0.83,
+        0.78,
+        0.73,
+        0.68,
+        0.63,
+        0.58,
+        0.53,
+        0.48,
+        0.43,
+        0.38,
+        0.34,
+        0.3,
+        0.27,
+        0.24,
+        0.21,
+        0.19,
+        0.17,
+        0.15,
+        0.14,
+        0.13,
+        0.12,
+        0.11
+      ]
+    },
+    "delayed_transition": {
+      "id": "delayed_transition",
+      "name": "Delayed Transition (Disorderly)",
+      "carbonPrices": [
+        15,
+        17,
+        19,
+        21,
+        25,
+        30,
+        75,
+        125,
+        185,
+        240,
+        290,
+        330,
+        360,
+        380,
+        395,
+        405,
+        410,
+        412,
+        415,
+        415,
+        415,
+        415,
+        415,
+        415,
+        415,
+        415
+      ],
+      "emissionsIndex": [
+        1,
+        1.01,
+        1.01,
+        1,
+        0.99,
+        0.98,
+        0.91,
+        0.82,
+        0.72,
+        0.62,
+        0.52,
+        0.44,
+        0.38,
+        0.33,
+        0.29,
+        0.26,
+        0.23,
+        0.21,
+        0.19,
+        0.18,
+        0.17,
+        0.16,
+        0.15,
+        0.14,
+        0.13,
+        0.12
+      ]
+    },
+    "current_policies": {
+      "id": "current_policies",
+      "name": "Current Policies (Hot House World)",
+      "carbonPrices": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        22,
+        24,
+        26,
+        28,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        37,
+        38,
+        38
+      ],
+      "emissionsIndex": [
+        1,
+        1.01,
+        1.02,
+        1.02,
+        1.02,
+        1.01,
+        1.01,
+        1,
+        0.99,
+        0.98,
+        0.97,
+        0.96,
+        0.96,
+        0.95,
+        0.94,
+        0.93,
+        0.92,
+        0.92,
+        0.91,
+        0.9,
+        0.9,
+        0.89,
+        0.89,
+        0.88,
+        0.88,
+        0.87
+      ]
+    }
+  },
+  "issuers": [
+    {
+      "id": "xom",
+      "ticker": "XOM",
+      "tenors": [
+        1,
+        3,
+        5,
+        7,
+        10
+      ],
+      "proxySpreadsBp": [
+        32,
+        46,
+        62,
+        75,
+        88
+      ],
+      "equityUsdB": 465,
+      "totalDebtUsdB": 41.5,
+      "equityVol": 0.22,
+      "riskFreeRate": 0.041,
+      "scope1MtCo2": 95,
+      "scope2MtCo2": 17,
+      "baseHazardRates": [
+        0.005306070700233737,
+        0.00887571309658801,
+        0.0148144255893666,
+        0.018991943155471584,
+        0.02135724807756308
+      ],
+      "merton": {
+        "V": 498807863610.4995,
+        "sigma_V": 0.20508898820144364,
+        "dd": 5.6398032139866645,
+        "rnPd": 8.512230729994667e-9,
+        "modelSpreadBp": 0.0000012171137434941736,
+        "kappa": 50940185.60829503,
+        "creditGradesSpread5yBp": 0.00003692935467628005,
+        "creditGradesAssetVol": 0.21060216160576428
+      },
+      "scenarios": {
+        "net_zero_2050": {
+          "status": "uninformative_at_current_leverage",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 33567343450.193596,
+          "haircutPctV": 6.729513686336968,
+          "shockedAssetValue": 465240520160.3059,
+          "creditGradesBase5yBp": 0.00003692935467628005,
+          "creditGradesShocked5yBp": 0.0001641210080160703,
+          "creditGradesDelta5yBp": 0.00012719165333979025,
+          "creditGradesDelta10yBp": 0.04039466043701404,
+          "scaledDeltaSpreadBp": 0.013287838245962755,
+          "tenorShiftsBp": [
+            0.0023432141030818505,
+            0.005889569327801304,
+            0.013287838245962755,
+            0.024703963744733215,
+            0.04039466043701404
+          ],
+          "adjustedSpreadsBp": [
+            32.002343214103085,
+            46.0058895693278,
+            62.013287838245965,
+            75.02470396374473,
+            88.04039466043702
+          ],
+          "adjustedHazardRates": [
+            0.005306459239713192,
+            0.008877007700819686,
+            0.014818752924379215,
+            0.01900191475898142,
+            0.0213724221165799
+          ],
+          "mtmProtectionImpactEur": 58.561009330290645,
+          "carbonPriceSensitivityBp": 0.0021146587851558034,
+          "climateCs01Bp": 0.0021146587851558034,
+          "cs01EurPerBp": 4407.128296241292
+        },
+        "delayed_transition": {
+          "status": "uninformative_at_current_leverage",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 37441739562.652916,
+          "haircutPctV": 7.5062448477936945,
+          "shockedAssetValue": 461366124047.8466,
+          "creditGradesBase5yBp": 0.00003692935467628005,
+          "creditGradesShocked5yBp": 0.0001939554263400411,
+          "creditGradesDelta5yBp": 0.00015702607166376105,
+          "creditGradesDelta10yBp": 0.04769707859738707,
+          "scaledDeltaSpreadBp": 0.015689971356370215,
+          "tenorShiftsBp": [
+            0.00276681289150756,
+            0.006954266927702489,
+            0.015689971356370215,
+            0.029169867691717147,
+            0.04769707859738707
+          ],
+          "adjustedSpreadsBp": [
+            32.00276681289151,
+            46.0069542669277,
+            62.01568997135637,
+            75.02916986769172,
+            88.04769707859738
+          ],
+          "adjustedHazardRates": [
+            0.005306529478643766,
+            0.008877241735352256,
+            0.01481953520897961,
+            0.019003717416259544,
+            0.021375165313423854
+          ],
+          "mtmProtectionImpactEur": 69.14743983799629,
+          "carbonPriceSensitivityBp": 0.00253654405657237,
+          "climateCs01Bp": 0.00253654405657237,
+          "cs01EurPerBp": 4407.128296241292
+        },
+        "current_policies": {
+          "status": "uninformative_at_current_leverage",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 10083598786.189562,
+          "haircutPctV": 2.021539659219059,
+          "shockedAssetValue": 488724264824.30994,
+          "creditGradesBase5yBp": 0.00003692935467628005,
+          "creditGradesShocked5yBp": 0.00005830603501773822,
+          "creditGradesDelta5yBp": 0.00002137668034145817,
+          "creditGradesDelta10yBp": 0.008676594501777393,
+          "scaledDeltaSpreadBp": 0.002854168917825176,
+          "tenorShiftsBp": [
+            0.0005033120314252628,
+            0.001265053457427082,
+            0.002854168917825176,
+            0.005306302211250984,
+            0.008676594501777393
+          ],
+          "adjustedSpreadsBp": [
+            32.00050331203143,
+            46.00126505345743,
+            62.00285416891783,
+            75.00530630221125,
+            88.00867659450178
+          ],
+          "adjustedHazardRates": [
+            0.005306154156796479,
+            0.008875991171775672,
+            0.014815355079627288,
+            0.018994084994026113,
+            0.0213605073289955
+          ],
+          "mtmProtectionImpactEur": 12.578679437179222,
+          "carbonPriceSensitivityBp": 0.0018221224131429173,
+          "climateCs01Bp": 0.0018221224131429173,
+          "cs01EurPerBp": 4407.128296241292
+        }
+      }
+    },
+    {
+      "id": "nee",
+      "ticker": "NEE",
+      "tenors": [
+        1,
+        3,
+        5,
+        7,
+        10
+      ],
+      "proxySpreadsBp": [
+        44,
+        62,
+        85,
+        102,
+        118
+      ],
+      "equityUsdB": 162,
+      "totalDebtUsdB": 78.2,
+      "equityVol": 0.24,
+      "riskFreeRate": 0.041,
+      "scope1MtCo2": 41.2,
+      "scope2MtCo2": 3.8,
+      "baseHazardRates": [
+        0.007295848165651704,
+        0.011891770879515528,
+        0.02067863081208122,
+        0.025650143887117616,
+        0.02815478327327189
+      ],
+      "merton": {
+        "V": 225699251412.36282,
+        "sigma_V": 0.17230853860524203,
+        "dd": 3.090391643082928,
+        "rnPd": 0.000999463636138173,
+        "modelSpreadBp": 0.19367362088167706,
+        "kappa": 438.88269147366174,
+        "creditGradesSpread5yBp": 2.8380394185047537,
+        "creditGradesAssetVol": 0.19333664843361512
+      },
+      "scenarios": {
+        "net_zero_2050": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 13486879064.809925,
+          "haircutPctV": 5.975597606289257,
+          "shockedAssetValue": 212212372347.5529,
+          "creditGradesBase5yBp": 2.8380394185047537,
+          "creditGradesShocked5yBp": 5.37099972897114,
+          "creditGradesDelta5yBp": 2.532960310466386,
+          "creditGradesDelta10yBp": 7.8934338390894965,
+          "scaledDeltaSpreadBp": 2.5965479329273258,
+          "tenorShiftsBp": [
+            0.4578824352871634,
+            1.150868093128767,
+            2.5965479329273258,
+            4.8273484978632855,
+            7.8934338390894965
+          ],
+          "adjustedSpreadsBp": [
+            44.45788243528716,
+            63.150868093128764,
+            87.59654793292732,
+            106.82734849786328,
+            125.8934338390895
+          ],
+          "adjustedHazardRates": [
+            0.007371771861262715,
+            0.012145114733655664,
+            0.02153140324255988,
+            0.027632391886477477,
+            0.03120340388345353
+          ],
+          "mtmProtectionImpactEur": 11352.335902624272,
+          "carbonPriceSensitivityBp": 0.3205687420583794,
+          "climateCs01Bp": 0.3205687420583794,
+          "cs01EurPerBp": 4374.982119194083
+        },
+        "delayed_transition": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 15043556074.280193,
+          "haircutPctV": 6.665310575973036,
+          "shockedAssetValue": 210655695338.08264,
+          "creditGradesBase5yBp": 2.8380394185047537,
+          "creditGradesShocked5yBp": 5.770173357360593,
+          "creditGradesDelta5yBp": 2.9321339388558396,
+          "creditGradesDelta10yBp": 8.996759556248286,
+          "scaledDeltaSpreadBp": 2.9594873289664863,
+          "tenorShiftsBp": [
+            0.5218841709811812,
+            1.311733742995661,
+            2.9594873289664863,
+            5.502103978425441,
+            8.996759556248286
+          ],
+          "adjustedSpreadsBp": [
+            44.52188417098118,
+            63.31173374299566,
+            87.95948732896649,
+            107.50210397842544,
+            126.99675955624829
+          ],
+          "adjustedHazardRates": [
+            0.007382384297934677,
+            0.01218052939794363,
+            0.021650681824239907,
+            0.027910135670486138,
+            0.03163205834423797
+          ],
+          "mtmProtectionImpactEur": 12937.942117982262,
+          "carbonPriceSensitivityBp": 0.36258948653240175,
+          "climateCs01Bp": 0.36258948653240175,
+          "cs01EurPerBp": 4374.982119194083
+        },
+        "current_policies": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 4051445940.879737,
+          "haircutPctV": 1.7950639692098758,
+          "shockedAssetValue": 221647805471.4831,
+          "creditGradesBase5yBp": 2.8380394185047537,
+          "creditGradesShocked5yBp": 3.4486419205723444,
+          "creditGradesDelta5yBp": 0.6106025020675907,
+          "creditGradesDelta10yBp": 2.082215070828635,
+          "scaledDeltaSpreadBp": 0.6849454050398253,
+          "tenorShiftsBp": [
+            0.12078516484184837,
+            0.30358839218761985,
+            0.6849454050398253,
+            1.2734100265230515,
+            2.082215070828635
+          ],
+          "adjustedSpreadsBp": [
+            44.12078516484185,
+            62.30358839218762,
+            85.68494540503983,
+            103.27341002652305,
+            120.08221507082864
+          ],
+          "adjustedHazardRates": [
+            0.007315876136424076,
+            0.011958597175184849,
+            0.020903486821494642,
+            0.026172228339890802,
+            0.02895592365512111
+          ],
+          "mtmProtectionImpactEur": 2996.100833067797,
+          "carbonPriceSensitivityBp": 0.3882913198972068,
+          "climateCs01Bp": 0.3882913198972068,
+          "cs01EurPerBp": 4374.982119194083
+        }
+      }
+    },
+    {
+      "id": "holn",
+      "ticker": "HOLN",
+      "tenors": [
+        1,
+        3,
+        5,
+        7,
+        10
+      ],
+      "proxySpreadsBp": [
+        58,
+        85,
+        118,
+        138,
+        162
+      ],
+      "equityUsdB": 52.4,
+      "totalDebtUsdB": 14.8,
+      "equityVol": 0.25,
+      "riskFreeRate": 0.038,
+      "scope1MtCo2": 74,
+      "scope2MtCo2": 4.2,
+      "baseHazardRates": [
+        0.009620863517728498,
+        0.016520388364209163,
+        0.029094410552719687,
+        0.03332706252430999,
+        0.04013880520415356
+      ],
+      "merton": {
+        "V": 64638632725.99036,
+        "sigma_V": 0.20267497771009302,
+        "dd": 3.4455193015469643,
+        "rnPd": 0.0002849816315595453,
+        "modelSpreadBp": 0.05923063669177278,
+        "kappa": 1992.2122501241045,
+        "creditGradesSpread5yBp": 0.5091287247896071,
+        "creditGradesAssetVol": 0.21906354515050167
+      },
+      "scenarios": {
+        "net_zero_2050": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 23437198730.403023,
+          "haircutPctV": 36.2588095415874,
+          "shockedAssetValue": 41201433995.58733,
+          "creditGradesBase5yBp": 0.5091287247896071,
+          "creditGradesShocked5yBp": 26.56784138856925,
+          "creditGradesDelta5yBp": 26.05871266377964,
+          "creditGradesDelta10yBp": 67.38043437915638,
+          "scaledDeltaSpreadBp": 22.16481840140754,
+          "tenorShiftsBp": [
+            3.9086053057732135,
+            9.82411376454542,
+            22.16481840140754,
+            41.20752074652416,
+            67.38043437915638
+          ],
+          "adjustedSpreadsBp": [
+            61.908605305773214,
+            94.82411376454542,
+            140.16481840140753,
+            179.20752074652415,
+            229.38043437915638
+          ],
+          "adjustedHazardRates": [
+            0.010269211762486507,
+            0.018687629566569358,
+            0.03646656191821907,
+            0.05074119439111341,
+            0.0681416377335006
+          ],
+          "mtmProtectionImpactEur": 96153.41515105752,
+          "carbonPriceSensitivityBp": 5.816050305632054,
+          "climateCs01Bp": 5.816050305632054,
+          "cs01EurPerBp": 4362.686682451995
+        },
+        "delayed_transition": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 26142357444.63803,
+          "haircutPctV": 40.44385894648809,
+          "shockedAssetValue": 38496275281.352325,
+          "creditGradesBase5yBp": 0.5091287247896071,
+          "creditGradesShocked5yBp": 39.54055083005113,
+          "creditGradesDelta5yBp": 39.03142210526153,
+          "creditGradesDelta10yBp": 87.62250029216429,
+          "scaledDeltaSpreadBp": 28.82345334736942,
+          "tenorShiftsBp": [
+            5.082807386190024,
+            12.775420923531806,
+            28.82345334736942,
+            53.58686140748038,
+            87.62250029216429
+          ],
+          "adjustedSpreadsBp": [
+            63.08280738619003,
+            97.77542092353181,
+            146.82345334736942,
+            191.58686140748037,
+            249.6225002921643
+          ],
+          "adjustedHazardRates": [
+            0.010463985063893955,
+            0.019339214319496024,
+            0.03869609417465511,
+            0.05610288920895788,
+            0.07711377920806878
+          ],
+          "mtmProtectionImpactEur": 124827.34543167758,
+          "carbonPriceSensitivityBp": 7.998037510190617,
+          "climateCs01Bp": 7.998037510190617,
+          "cs01EurPerBp": 4362.686682451995
+        },
+        "current_policies": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 7040512723.928785,
+          "haircutPctV": 10.892112699496948,
+          "shockedAssetValue": 57598120002.06157,
+          "creditGradesBase5yBp": 0.5091287247896071,
+          "creditGradesShocked5yBp": 1.8824371682804302,
+          "creditGradesDelta5yBp": 1.373308443490823,
+          "creditGradesDelta10yBp": 8.211323105566793,
+          "scaledDeltaSpreadBp": 2.701117722780232,
+          "tenorShiftsBp": [
+            0.4763225608970671,
+            1.1972165672396273,
+            2.701117722780232,
+            5.021758472571207,
+            8.211323105566793
+          ],
+          "adjustedSpreadsBp": [
+            58.47632256089707,
+            86.19721656723962,
+            120.70111772278022,
+            143.0217584725712,
+            170.2113231055668
+          ],
+          "adjustedHazardRates": [
+            0.009699874531898425,
+            0.01678435890299692,
+            0.02998879501433653,
+            0.03541467648708053,
+            0.04341041766989662
+          ],
+          "mtmProtectionImpactEur": 11776.018328975577,
+          "carbonPriceSensitivityBp": 2.318449171063846,
+          "climateCs01Bp": 2.318449171063846,
+          "cs01EurPerBp": 4362.686682451995
+        }
+      }
+    },
+    {
+      "id": "tte",
+      "ticker": "TTE",
+      "tenors": [
+        1,
+        3,
+        5,
+        7,
+        10
+      ],
+      "proxySpreadsBp": [
+        34,
+        48,
+        65,
+        78,
+        92
+      ],
+      "equityUsdB": 168,
+      "totalDebtUsdB": 56.4,
+      "equityVol": 0.24,
+      "riskFreeRate": 0.038,
+      "scope1MtCo2": 36.5,
+      "scope2MtCo2": 4.5,
+      "baseHazardRates": [
+        0.005639814760300316,
+        0.009205848941371239,
+        0.015570814752985848,
+        0.019439511464653322,
+        0.022462878669241914
+      ],
+      "merton": {
+        "V": 214639091737.1709,
+        "sigma_V": 0.18786159093511903,
+        "dd": 3.4238447492344353,
+        "rnPd": 0.000308709414623589,
+        "modelSpreadBp": 0.06018110849790296,
+        "kappa": 1080.0731595408374,
+        "creditGradesSpread5yBp": 0.6938934306807906,
+        "creditGradesAssetVol": 0.2055045871559633
+      },
+      "scenarios": {
+        "net_zero_2050": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 12288045370.160152,
+          "haircutPctV": 5.724980137917778,
+          "shockedAssetValue": 202351046367.01074,
+          "creditGradesBase5yBp": 0.6938934306807906,
+          "creditGradesShocked5yBp": 1.3876978600298062,
+          "creditGradesDelta5yBp": 0.6938044293490156,
+          "creditGradesDelta10yBp": 3.986720907323927,
+          "scaledDeltaSpreadBp": 1.3114332927967076,
+          "tenorShiftsBp": [
+            0.23126176960093378,
+            0.5812666555494587,
+            1.3114332927967076,
+            2.4381392909211046,
+            3.986720907323927
+          ],
+          "adjustedSpreadsBp": [
+            34.231261769600934,
+            48.581266655549456,
+            66.3114332927967,
+            80.4381392909211,
+            95.98672090732393
+          ],
+          "adjustedHazardRates": [
+            0.005678175759660617,
+            0.009333546998121608,
+            0.01599702835243961,
+            0.02041992618347388,
+            0.02395694649886704
+          ],
+          "mtmProtectionImpactEur": 5816.053340272643,
+          "carbonPriceSensitivityBp": 0.1639269633082081,
+          "climateCs01Bp": 0.1639269633082081,
+          "cs01EurPerBp": 4436.370747472167
+        },
+        "delayed_transition": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 13706351089.899729,
+          "haircutPctV": 6.385766441223755,
+          "shockedAssetValue": 200932740647.27118,
+          "creditGradesBase5yBp": 0.6938934306807906,
+          "creditGradesShocked5yBp": 1.5001216162437678,
+          "creditGradesDelta5yBp": 0.8062281855629773,
+          "creditGradesDelta10yBp": 4.55100641459489,
+          "scaledDeltaSpreadBp": 1.4970552156953831,
+          "tenorShiftsBp": [
+            0.2639948522533735,
+            0.6635398713604425,
+            1.4970552156953831,
+            2.78323660235999,
+            4.55100641459489
+          ],
+          "adjustedSpreadsBp": [
+            34.263994852253376,
+            48.66353987136044,
+            66.49705521569538,
+            80.78323660235999,
+            96.5510064145949
+          ],
+          "adjustedHazardRates": [
+            0.005683605423931231,
+            0.009351622273717245,
+            0.016057375306835993,
+            0.020558859943759195,
+            0.024169022231847363
+          ],
+          "mtmProtectionImpactEur": 6638.949708154255,
+          "carbonPriceSensitivityBp": 0.18591563438221015,
+          "climateCs01Bp": 0.18591563438221015,
+          "cs01EurPerBp": 4436.370747472167
+        },
+        "current_policies": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 3691317412.8015366,
+          "haircutPctV": 1.719778714551036,
+          "shockedAssetValue": 210947774324.36935,
+          "creditGradesBase5yBp": 0.6938934306807906,
+          "creditGradesShocked5yBp": 0.8575008733755431,
+          "creditGradesDelta5yBp": 0.16360744269475258,
+          "creditGradesDelta10yBp": 1.0419282455989611,
+          "scaledDeltaSpreadBp": 0.34274267543371795,
+          "tenorShiftsBp": [
+            0.06044019019032723,
+            0.15191385620428485,
+            0.34274267543371795,
+            0.637206930951315,
+            1.0419282455989611
+          ],
+          "adjustedSpreadsBp": [
+            34.06044019019033,
+            48.15191385620429,
+            65.34274267543371,
+            78.63720693095131,
+            93.04192824559897
+          ],
+          "adjustedHazardRates": [
+            0.005649840395300025,
+            0.009239221914088186,
+            0.015682181484847346,
+            0.01969554611353298,
+            0.022852634194141967
+          ],
+          "mtmProtectionImpactEur": 1520.4003035707224,
+          "carbonPriceSensitivityBp": 0.19541046604487988,
+          "climateCs01Bp": 0.19541046604487988,
+          "cs01EurPerBp": 4436.370747472167
+        }
+      }
+    },
+    {
+      "id": "tatasteel",
+      "ticker": "TATASTEEL",
+      "tenors": [
+        1,
+        3,
+        5,
+        7,
+        10
+      ],
+      "proxySpreadsBp": [
+        88,
+        128,
+        178,
+        208,
+        242
+      ],
+      "equityUsdB": 23.8,
+      "totalDebtUsdB": 10.8,
+      "equityVol": 0.32,
+      "riskFreeRate": 0.045,
+      "scope1MtCo2": 31,
+      "scope2MtCo2": 3.5,
+      "baseHazardRates": [
+        0.014584414420635045,
+        0.02487332886571443,
+        0.044577095602272,
+        0.05135146575415709,
+        0.06137492992895993
+      ],
+      "merton": {
+        "V": 32407465698.367226,
+        "sigma_V": 0.23565646097864204,
+        "dd": 2.24883112259203,
+        "rnPd": 0.012261621447355769,
+        "modelSpreadBp": 3.832405988314473,
+        "kappa": 46.44601864801021,
+        "creditGradesSpread5yBp": 18.89842851529627,
+        "creditGradesAssetVol": 0.2608219178082192
+      },
+      "scenarios": {
+        "net_zero_2050": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 10339940616.35427,
+          "haircutPctV": 31.906045084158567,
+          "shockedAssetValue": 22067525082.012955,
+          "creditGradesBase5yBp": 18.89842851529627,
+          "creditGradesShocked5yBp": 167.43378187339803,
+          "creditGradesDelta5yBp": 148.53535335810176,
+          "creditGradesDelta10yBp": 176.91034530169435,
+          "scaledDeltaSpreadBp": 58.19472244535344,
+          "tenorShiftsBp": [
+            10.262218115148803,
+            25.793650254449705,
+            58.19472244535344,
+            108.19218949038772,
+            176.91034530169435
+          ],
+          "adjustedSpreadsBp": [
+            98.2622181151488,
+            153.79365025444972,
+            236.19472244535345,
+            316.1921894903877,
+            418.91034530169435
+          ],
+          "adjustedHazardRates": [
+            0.01628519662230138,
+            0.03060205560391336,
+            0.0646879542912327,
+            0.10149655643258401,
+            0.1515155140629735
+          ],
+          "mtmProtectionImpactEur": 241183.5620629256,
+          "carbonPriceSensitivityBp": 10.615179309625013,
+          "climateCs01Bp": 10.615179309625013,
+          "cs01EurPerBp": 4205.777292320971
+        },
+        "delayed_transition": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 11533392990.28148,
+          "haircutPctV": 35.588691499757,
+          "shockedAssetValue": 20874072708.085747,
+          "creditGradesBase5yBp": 18.89842851529627,
+          "creditGradesShocked5yBp": 209.48622079530406,
+          "creditGradesDelta5yBp": 190.5877922800078,
+          "creditGradesDelta10yBp": 213.66182502175099,
+          "scaledDeltaSpreadBp": 70.28413506911733,
+          "tenorShiftsBp": [
+            12.394098533439282,
+            31.15204132319159,
+            70.28413506911733,
+            130.66811112823004,
+            213.66182502175099
+          ],
+          "adjustedSpreadsBp": [
+            100.39409853343928,
+            159.15204132319158,
+            248.28413506911733,
+            338.66811112823007,
+            455.661825021751
+          ],
+          "adjustedHazardRates": [
+            0.016638518494212304,
+            0.03179448855876272,
+            0.06893873619985823,
+            0.11264750458731881,
+            0.17455248771699167
+          ],
+          "mtmProtectionImpactEur": 290399.9557897776,
+          "carbonPriceSensitivityBp": 13.35380655331582,
+          "climateCs01Bp": 13.35380655331582,
+          "cs01EurPerBp": 4205.777292320971
+        },
+        "current_policies": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 3106108554.6744647,
+          "haircutPctV": 9.584546300487046,
+          "shockedAssetValue": 29301357143.69276,
+          "creditGradesBase5yBp": 18.89842851529627,
+          "creditGradesShocked5yBp": 38.66682755311688,
+          "creditGradesDelta5yBp": 19.76839903782061,
+          "creditGradesDelta10yBp": 33.986497581300284,
+          "scaledDeltaSpreadBp": 11.179870743344841,
+          "tenorShiftsBp": [
+            1.971489290547105,
+            4.9552547675535195,
+            11.179870743344841,
+            20.784955114750023,
+            33.986497581300284
+          ],
+          "adjustedSpreadsBp": [
+            89.97148929054711,
+            132.95525476755353,
+            189.17987074334485,
+            228.78495511475003,
+            275.9864975813003
+          ],
+          "adjustedHazardRates": [
+            0.014911153996811767,
+            0.025972438880049367,
+            0.04839651605894346,
+            0.06056546647848347,
+            0.07658187133713529
+          ],
+          "mtmProtectionImpactEur": 46887.420811831114,
+          "carbonPriceSensitivityBp": 7.572104817882694,
+          "climateCs01Bp": 7.572104817882694,
+          "cs01EurPerBp": 4205.777292320971
+        }
+      }
+    },
+    {
+      "id": "ntpc",
+      "ticker": "NTPC",
+      "tenors": [
+        1,
+        3,
+        5,
+        7,
+        10
+      ],
+      "proxySpreadsBp": [
+        86,
+        124,
+        172,
+        202,
+        235
+      ],
+      "equityUsdB": 43.5,
+      "totalDebtUsdB": 28.4,
+      "equityVol": 0.26,
+      "riskFreeRate": 0.045,
+      "scope1MtCo2": 238,
+      "scope2MtCo2": 2.1,
+      "baseHazardRates": [
+        0.01425294974695894,
+        0.024023950194235248,
+        0.04293894575579525,
+        0.050280617039610065,
+        0.059437833679608594
+      ],
+      "merton": {
+        "V": 66166661734.139984,
+        "sigma_V": 0.17117156414651333,
+        "dd": 2.6062313901071468,
+        "rnPd": 0.004577229804268169,
+        "modelSpreadBp": 0.987892541316923,
+        "kappa": 174.10800548277564,
+        "creditGradesSpread5yBp": 12.268710743756643,
+        "creditGradesAssetVol": 0.19601386481802427
+      },
+      "scenarios": {
+        "net_zero_2050": {
+          "status": "insolvent_in_scenario",
+          "exceedsEmpiricalRange": true,
+          "totalHaircutUsd": 71959992521.35251,
+          "haircutPctV": 108.75566431096424,
+          "shockedAssetValue": -5793330787.212524,
+          "creditGradesBase5yBp": 12.268710743756643,
+          "creditGradesShocked5yBp": 3353.864998278602,
+          "creditGradesDelta5yBp": 3341.596287534845,
+          "creditGradesDelta10yBp": 1940.215067413327,
+          "scaledDeltaSpreadBp": 638.2344522580607,
+          "tenorShiftsBp": [
+            112.54802639234352,
+            282.88469383702915,
+            638.2344522580607,
+            1186.5677830638297,
+            1940.215067413327
+          ],
+          "adjustedSpreadsBp": [
+            198.5480263923435,
+            406.88469383702915,
+            810.2344522580607,
+            1388.5677830638297,
+            2175.2150674133272
+          ],
+          "adjustedHazardRates": [
+            0.01425294974695894,
+            0.024023950194235248,
+            0.04293894575579525,
+            0.050280617039610065,
+            0.059437833679608594
+          ],
+          "mtmProtectionImpactEur": 6000000,
+          "carbonPriceSensitivityBp": null,
+          "climateCs01Bp": null,
+          "cs01EurPerBp": 4213.376698775109
+        },
+        "delayed_transition": {
+          "status": "insolvent_in_scenario",
+          "exceedsEmpiricalRange": true,
+          "totalHaircutUsd": 80265729187.4372,
+          "haircutPctV": 121.3084158755776,
+          "shockedAssetValue": -14099067453.29721,
+          "creditGradesBase5yBp": 12.268710743756643,
+          "creditGradesShocked5yBp": 3416.2591450193013,
+          "creditGradesDelta5yBp": 3403.9904342755444,
+          "creditGradesDelta10yBp": 1979.4681476084097,
+          "scaledDeltaSpreadBp": 651.1467672681438,
+          "tenorShiftsBp": [
+            114.82501969065183,
+            288.6078199788904,
+            651.1467672681438,
+            1210.573596196495,
+            1979.4681476084097
+          ],
+          "adjustedSpreadsBp": [
+            200.82501969065183,
+            412.6078199788904,
+            823.1467672681438,
+            1412.573596196495,
+            2214.4681476084097
+          ],
+          "adjustedHazardRates": [
+            0.01425294974695894,
+            0.024023950194235248,
+            0.04293894575579525,
+            0.050280617039610065,
+            0.059437833679608594
+          ],
+          "mtmProtectionImpactEur": 6000000,
+          "carbonPriceSensitivityBp": null,
+          "climateCs01Bp": null,
+          "cs01EurPerBp": 4213.376698775109
+        },
+        "current_policies": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 21616714897.89388,
+          "haircutPctV": 32.67010051791734,
+          "shockedAssetValue": 44549946836.24611,
+          "creditGradesBase5yBp": 12.268710743756643,
+          "creditGradesShocked5yBp": 174.954032706164,
+          "creditGradesDelta5yBp": 162.6853219624074,
+          "creditGradesDelta10yBp": 178.88992693605178,
+          "scaledDeltaSpreadBp": 58.84590654412896,
+          "tenorShiftsBp": [
+            10.377049717980592,
+            26.082274620874806,
+            58.84590654412896,
+            109.40283249111697,
+            178.88992693605178
+          ],
+          "adjustedSpreadsBp": [
+            96.3770497179806,
+            150.0822746208748,
+            230.84590654412895,
+            311.40283249111695,
+            413.8899269360518
+          ],
+          "adjustedHazardRates": [
+            0.015972763003459567,
+            0.029814215524651886,
+            0.06323027589637151,
+            0.10085988431378289,
+            0.15003816701453418
+          ],
+          "mtmProtectionImpactEur": 244281.75613941488,
+          "carbonPriceSensitivityBp": 99.61771009826452,
+          "climateCs01Bp": 99.61771009826452,
+          "cs01EurPerBp": 4213.376698775109
+        }
+      }
+    },
+    {
+      "id": "msft",
+      "ticker": "MSFT",
+      "tenors": [
+        1,
+        3,
+        5,
+        7,
+        10
+      ],
+      "proxySpreadsBp": [
+        18,
+        28,
+        38,
+        48,
+        58
+      ],
+      "equityUsdB": 3120,
+      "totalDebtUsdB": 75.3,
+      "equityVol": 0.21,
+      "riskFreeRate": 0.041,
+      "scope1MtCo2": 0.12,
+      "scope2MtCo2": 0.16,
+      "baseHazardRates": [
+        0.0029846644700582035,
+        0.005530439153971909,
+        0.00910486655564271,
+        0.01290995913638974,
+        0.014668850619046957
+      ],
+      "merton": {
+        "V": 3181342942925.7793,
+        "sigma_V": 0.20595076096933881,
+        "dd": 8.34391577468002,
+        "rnPd": 3.593509324491126e-17,
+        "modelSpreadBp": 0,
+        "kappa": null,
+        "creditGradesSpread5yBp": 3.0642155479654357e-12,
+        "creditGradesAssetVol": 0.20749608094627334
+      },
+      "scenarios": {
+        "net_zero_2050": {
+          "status": "uninformative_at_current_leverage",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 83918358.62548399,
+          "haircutPctV": 0.0026378281163333796,
+          "shockedAssetValue": 3181259024567.154,
+          "creditGradesBase5yBp": 3.0642155479654357e-12,
+          "creditGradesShocked5yBp": 3.0642155479654357e-12,
+          "creditGradesDelta5yBp": 0,
+          "creditGradesDelta10yBp": 1.3403944666263054e-9,
+          "scaledDeltaSpreadBp": 4.409232474199367e-10,
+          "tenorShiftsBp": [
+            7.77536234718205e-11,
+            1.954304369040619e-10,
+            4.409232474199367e-10,
+            8.197384493133511e-10,
+            1.3403944666263054e-9
+          ],
+          "adjustedSpreadsBp": [
+            18.000000000077755,
+            28.00000000019543,
+            38.00000000044092,
+            48.00000000081974,
+            58.000000001340396
+          ],
+          "adjustedHazardRates": [
+            0.0029846644700710894,
+            0.0055304391540147825,
+            0.00910486655578526,
+            0.012909959136716102,
+            0.01466885061953979
+          ],
+          "mtmProtectionImpactEur": 0.000001958752523092217,
+          "carbonPriceSensitivityBp": 4.5052092073079916e-11,
+          "climateCs01Bp": 4.5052092073079916e-11,
+          "cs01EurPerBp": 4442.388861449429
+        },
+        "delayed_transition": {
+          "status": "uninformative_at_current_leverage",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 93604348.9066323,
+          "haircutPctV": 0.0029422904284738126,
+          "shockedAssetValue": 3181249338576.8726,
+          "creditGradesBase5yBp": 3.0642155479654357e-12,
+          "creditGradesShocked5yBp": 3.0642155479654357e-12,
+          "creditGradesDelta5yBp": 0,
+          "creditGradesDelta10yBp": 1.4951373523224496e-9,
+          "scaledDeltaSpreadBp": 4.918259759637259e-10,
+          "tenorShiftsBp": [
+            8.672995123870866e-11,
+            2.1799205627235784e-10,
+            4.918259759637259e-10,
+            9.143737945950287e-10,
+            1.4951373523224496e-9
+          ],
+          "adjustedSpreadsBp": [
+            18.00000000008673,
+            28.00000000021799,
+            38.00000000049182,
+            48.000000000914376,
+            58.00000000149514
+          ],
+          "adjustedHazardRates": [
+            0.0029846644700725084,
+            0.005530439154019754,
+            0.009104866555801719,
+            0.012909959136753808,
+            0.014668850619596673
+          ],
+          "mtmProtectionImpactEur": 0.000002184882237392476,
+          "carbonPriceSensitivityBp": 4.890869139455966e-11,
+          "climateCs01Bp": 4.890869139455966e-11,
+          "cs01EurPerBp": 4442.388861449429
+        },
+        "current_policies": {
+          "status": "uninformative_at_current_leverage",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 25208996.965473916,
+          "haircutPctV": 0.0007924011154324032,
+          "shockedAssetValue": 3181317733928.814,
+          "creditGradesBase5yBp": 3.0642155479654357e-12,
+          "creditGradesShocked5yBp": 3.0642155479654357e-12,
+          "creditGradesDelta5yBp": 0,
+          "creditGradesDelta10yBp": 4.0254466563061824e-10,
+          "scaledDeltaSpreadBp": 1.3241721420124927e-10,
+          "tenorShiftsBp": [
+            2.3350817346188763e-11,
+            5.869128964371041e-11,
+            1.3241721420124927e-10,
+            2.461822606698371e-10,
+            4.0254466563061824e-10
+          ],
+          "adjustedSpreadsBp": [
+            18.000000000023352,
+            28.00000000005869,
+            38.00000000013242,
+            48.00000000024618,
+            58.000000000402544
+          ],
+          "adjustedHazardRates": [
+            0.0029846644700620554,
+            0.005530439153984788,
+            0.0091048665556855,
+            0.01290995913648779,
+            0.014668850619194932
+          ],
+          "mtmProtectionImpactEur": 5.882487574317731e-7,
+          "carbonPriceSensitivityBp": 6.913392533590965e-11,
+          "climateCs01Bp": 6.913392533590965e-11,
+          "cs01EurPerBp": 4442.388861449429
+        }
+      }
+    },
+    {
+      "id": "pfe",
+      "ticker": "PFE",
+      "tenors": [
+        1,
+        3,
+        5,
+        7,
+        10
+      ],
+      "proxySpreadsBp": [
+        31,
+        44,
+        60,
+        74,
+        87
+      ],
+      "equityUsdB": 164,
+      "totalDebtUsdB": 61.8,
+      "equityVol": 0.23,
+      "riskFreeRate": 0.041,
+      "scope1MtCo2": 0.85,
+      "scope2MtCo2": 0.45,
+      "baseHazardRates": [
+        0.005140255944477839,
+        0.008454346631696833,
+        0.014478571308234356,
+        0.01932617139779763,
+        0.021189018182573488
+      ],
+      "merton": {
+        "V": 214344078856.50415,
+        "sigma_V": 0.1759879998453706,
+        "dd": 3.4845645040659146,
+        "rnPd": 0.00024646931607496137,
+        "modelSpreadBp": 0.044703773336963466,
+        "kappa": 1342.1685804403628,
+        "creditGradesSpread5yBp": 0.7460681986044538,
+        "creditGradesAssetVol": 0.19353514622883533
+      },
+      "scenarios": {
+        "net_zero_2050": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 389620950.7611755,
+          "haircutPctV": 0.181773601043588,
+          "shockedAssetValue": 213954457905.74298,
+          "creditGradesBase5yBp": 0.7460681986044538,
+          "creditGradesShocked5yBp": 0.7631333894212781,
+          "creditGradesDelta5yBp": 0.017065190816824227,
+          "creditGradesDelta10yBp": 0.10276278690672047,
+          "scaledDeltaSpreadBp": 0.03380385613712508,
+          "tenorShiftsBp": [
+            0.0059610653721742695,
+            0.014982885145152135,
+            0.03380385613712508,
+            0.06284613200325799,
+            0.10276278690672047
+          ],
+          "adjustedSpreadsBp": [
+            31.005961065372173,
+            44.01498288514515,
+            60.033803856137126,
+            74.06284613200326,
+            87.10276278690672
+          ],
+          "adjustedHazardRates": [
+            0.005141244377063444,
+            0.008457639330818759,
+            0.014489574907169438,
+            0.019351553352046753,
+            0.021227614321317128
+          ],
+          "mtmProtectionImpactEur": 149.08846715564638,
+          "carbonPriceSensitivityBp": 0.003478634474796939,
+          "climateCs01Bp": 0.003478634474796939,
+          "cs01EurPerBp": 4410.436284083413
+        },
+        "delayed_transition": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 434591619.92365,
+          "haircutPctV": 0.20275419887600155,
+          "shockedAssetValue": 213909487236.5805,
+          "creditGradesBase5yBp": 0.7460681986044538,
+          "creditGradesShocked5yBp": 0.7651264066359821,
+          "creditGradesDelta5yBp": 0.019058208031528245,
+          "creditGradesDelta10yBp": 0.11470891890250456,
+          "scaledDeltaSpreadBp": 0.037733540603031517,
+          "tenorShiftsBp": [
+            0.00665403678638992,
+            0.01672463942225373,
+            0.037733540603031517,
+            0.07015196917383683,
+            0.11470891890250456
+          ],
+          "adjustedSpreadsBp": [
+            31.00665403678639,
+            44.01672463942225,
+            60.03773354060303,
+            74.07015196917384,
+            87.11470891890251
+          ],
+          "adjustedHazardRates": [
+            0.005141359281947687,
+            0.00845802210613777,
+            0.014490854081849063,
+            0.01935450408256051,
+            0.021232101430645085
+          ],
+          "mtmProtectionImpactEur": 166.41977361565148,
+          "carbonPriceSensitivityBp": 0.0037809638760431252,
+          "climateCs01Bp": 0.0037809638760431252,
+          "cs01EurPerBp": 4410.436284083413
+        },
+        "current_policies": {
+          "status": "normal",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 117041771.62541461,
+          "haircutPctV": 0.054604620873978035,
+          "shockedAssetValue": 214227037084.87872,
+          "creditGradesBase5yBp": 0.7460681986044538,
+          "creditGradesShocked5yBp": 0.7511566921976147,
+          "creditGradesDelta5yBp": 0.005088493593160881,
+          "creditGradesDelta10yBp": 0.030731361615618624,
+          "scaledDeltaSpreadBp": 0.010109092583245249,
+          "tenorShiftsBp": [
+            0.00178266531184013,
+            0.004480653700632936,
+            0.010109092583245249,
+            0.01879422762724546,
+            0.030731361615618624
+          ],
+          "adjustedSpreadsBp": [
+            31.00178266531184,
+            44.00448065370063,
+            60.01010909258324,
+            74.01879422762724,
+            87.03073136161562
+          ],
+          "adjustedHazardRates": [
+            0.005140551536687234,
+            0.008455331317549558,
+            0.014481861933133906,
+            0.019333761765028483,
+            0.021200559890980998
+          ],
+          "mtmProtectionImpactEur": 44.58539367452494,
+          "carbonPriceSensitivityBp": 0.005293786310925679,
+          "climateCs01Bp": 0.005293786310925679,
+          "cs01EurPerBp": 4410.436284083413
+        }
+      }
+    },
+    {
+      "id": "sap",
+      "ticker": "SAP",
+      "tenors": [
+        1,
+        3,
+        5,
+        7,
+        10
+      ],
+      "proxySpreadsBp": [
+        28,
+        40,
+        56,
+        70,
+        84
+      ],
+      "equityUsdB": 242,
+      "totalDebtUsdB": 12.2,
+      "equityVol": 0.22,
+      "riskFreeRate": 0.038,
+      "scope1MtCo2": 0.08,
+      "scope2MtCo2": 0.07,
+      "baseHazardRates": [
+        0.004644553085767394,
+        0.0076990392285346005,
+        0.013778307302577062,
+        0.018576433648071863,
+        0.021087295070392163
+      ],
+      "merton": {
+        "V": 252088901434.0936,
+        "sigma_V": 0.21119533504717333,
+        "dd": 6.578837676528288,
+        "rnPd": 2.3707002093549955e-11,
+        "modelSpreadBp": 3.05555580837569e-9,
+        "kappa": 18327271210.853508,
+        "creditGradesSpread5yBp": 1.5298402545747387e-7,
+        "creditGradesAssetVol": 0.21459089076985088
+      },
+      "scenarios": {
+        "net_zero_2050": {
+          "status": "uninformative_at_current_leverage",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 44956263.54936644,
+          "haircutPctV": 0.017833495760272433,
+          "shockedAssetValue": 252043945170.54422,
+          "creditGradesBase5yBp": 1.5298402545747387e-7,
+          "creditGradesShocked5yBp": 1.5375754004328957e-7,
+          "creditGradesDelta5yBp": 7.735145858157037e-10,
+          "creditGradesDelta10yBp": 0.000003780794024720426,
+          "scaledDeltaSpreadBp": 0.0000012436935698499746,
+          "tenorShiftsBp": [
+            2.1931635972992874e-7,
+            5.512423741610205e-7,
+            0.0000012436935698499746,
+            0.0000023122016004722606,
+            0.000003780794024720426
+          ],
+          "adjustedSpreadsBp": [
+            28.00000021931636,
+            40.00000055124237,
+            56.00000124369357,
+            70.0000023122016,
+            84.00000378079403
+          ],
+          "adjustedHazardRates": [
+            0.004644553122147,
+            0.007699039349549057,
+            0.013778307705707347,
+            0.018576434574872944,
+            0.021087296478362327
+          ],
+          "mtmProtectionImpactEur": 0.005535530339400541,
+          "carbonPriceSensitivityBp": 1.2729500130715745e-7,
+          "climateCs01Bp": 1.2729500130715745e-7,
+          "cs01EurPerBp": 4450.879601982916
+        },
+        "delayed_transition": {
+          "status": "uninformative_at_current_leverage",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 50145186.91426732,
+          "haircutPctV": 0.019891866174591318,
+          "shockedAssetValue": 252038756247.17932,
+          "creditGradesBase5yBp": 1.5298402545747387e-7,
+          "creditGradesShocked5yBp": 1.5384693520124382e-7,
+          "creditGradesDelta5yBp": 8.629097437699562e-10,
+          "creditGradesDelta10yBp": 0.000004217915022780572,
+          "scaledDeltaSpreadBp": 0.0000013874846811824696,
+          "tenorShiftsBp": [
+            2.4467288151589235e-7,
+            6.149749168996129e-7,
+            0.0000013874846811824696,
+            0.0000025795295386530347,
+            0.000004217915022780572
+          ],
+          "adjustedSpreadsBp": [
+            28.000000244672883,
+            40.000000614974915,
+            56.00000138748468,
+            70.00000257952954,
+            84.00000421791502
+          ],
+          "adjustedHazardRates": [
+            0.004644553126352967,
+            0.007699039363540321,
+            0.01377830775231573,
+            0.018576434682026192,
+            0.021087296641146475
+          ],
+          "mtmProtectionImpactEur": 0.006175527263345807,
+          "carbonPriceSensitivityBp": 1.38195963702468e-7,
+          "climateCs01Bp": 1.38195963702468e-7,
+          "cs01EurPerBp": 4450.879601982916
+        },
+        "current_policies": {
+          "status": "uninformative_at_current_leverage",
+          "exceedsEmpiricalRange": false,
+          "totalHaircutUsd": 13504819.802932454,
+          "haircutPctV": 0.00535716555790663,
+          "shockedAssetValue": 252075396614.29068,
+          "creditGradesBase5yBp": 1.5298402545747387e-7,
+          "creditGradesShocked5yBp": 1.5321597325180815e-7,
+          "creditGradesDelta5yBp": 2.3194779433428092e-10,
+          "creditGradesDelta10yBp": 0.0000011345468786062764,
+          "scaledDeltaSpreadBp": 3.7320960845528354e-7,
+          "tenorShiftsBp": [
+            6.581281332227071e-8,
+            1.654177167205361e-7,
+            3.7320960845528354e-7,
+            6.938492526627981e-7,
+            0.0000011345468786062764
+          ],
+          "adjustedSpreadsBp": [
+            28.000000065812813,
+            40.00000016541772,
+            56.00000037320961,
+            70.00000069384926,
+            84.00000113454688
+          ],
+          "adjustedHazardRates": [
+            0.004644553096684243,
+            0.007699039264848834,
+            0.013778307423549048,
+            0.018576433926187796,
+            0.021087295492898186
+          ],
+          "mtmProtectionImpactEur": 0.0016611110333789837,
+          "carbonPriceSensitivityBp": 1.9499900514963586e-7,
+          "climateCs01Bp": 1.9499900514963586e-7,
+          "cs01EurPerBp": 4450.879601982916
+        }
+      }
+    }
+  ]
+}
